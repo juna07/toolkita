@@ -1,0 +1,2760 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toolkita — Tools Gratis buat Kerja Lebih Cepat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F7F5EF;
+  --ink:#1B1F23;
+  --navy:#153450;
+  --navy-2:#0F2740;
+  --amber:#FFB627;
+  --teal:#0E7C7B;
+  --line:#DAD4C5;
+  --danger:#C1432E;
+  --card:#FFFFFF;
+  --radius:10px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} *{animation:none !important; transition:none !important;} }
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:'IBM Plex Sans', sans-serif; line-height:1.5;
+}
+h1,h2,h3,.display{ font-family:'Space Grotesk', sans-serif; }
+.mono{ font-family:'IBM Plex Mono', monospace; }
+a{ color:var(--teal); }
+button, input, select, textarea{ font-family:inherit; font-size:1rem; }
+:focus-visible{ outline:3px solid var(--amber); outline-offset:2px; }
+
+.wrap{ max-width:1080px; margin:0 auto; padding:0 20px; }
+
+/* ---- NAV ---- */
+.nav{
+  position:sticky; top:0; z-index:40; background:var(--navy);
+  border-bottom:3px solid var(--amber);
+}
+.nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:64px; }
+.logo{ color:#fff; font-weight:700; font-size:1.3rem; text-decoration:none; letter-spacing:0.5px; }
+.logo span{ color:var(--amber); }
+.navlinks{ display:flex; gap:22px; align-items:center; }
+.navlinks a{ color:#EDE9DD; text-decoration:none; font-weight:500; font-size:0.95rem; }
+.navlinks a:hover{ color:var(--amber); }
+
+/* ---- HERO ---- */
+.hero{ background:var(--navy); color:#fff; padding:56px 0 70px; position:relative; }
+.hero .wrap{ position:relative; }
+.eyebrow{ font-family:'IBM Plex Mono',monospace; color:var(--amber); font-size:0.8rem; letter-spacing:2px; text-transform:uppercase; margin:0 0 10px; }
+.hero h1{ font-size:2.4rem; margin:0 0 12px; max-width:640px; line-height:1.15; }
+.hero p{ color:#C9D3DC; max-width:520px; margin:0 0 28px; font-size:1.05rem; }
+.searchbox{ display:flex; gap:0; max-width:520px; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.25); }
+.searchbox input{ flex:1; border:none; padding:15px 16px; font-size:1rem; outline:none; }
+.searchbox .icon{ display:flex; align-items:center; padding:0 16px; color:var(--navy); font-weight:600; }
+
+/* ---- SECTIONS ---- */
+section.block{ padding:44px 0; }
+.section-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:22px; }
+.section-head .tag{ font-family:'IBM Plex Mono',monospace; font-size:0.75rem; color:var(--teal); background:rgba(14,124,123,0.1); padding:3px 8px; border-radius:4px; letter-spacing:1px; }
+.section-head h2{ font-size:1.4rem; margin:0; }
+
+.grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:16px; }
+
+/* Tool card — pegboard tag signature */
+.card{
+  position:relative; background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+  padding:20px 18px 18px; text-decoration:none; color:var(--ink); display:block;
+  transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.card:before{
+  content:''; position:absolute; top:14px; left:14px; width:8px; height:8px; border-radius:50%;
+  background:var(--paper); border:1px solid var(--line); box-shadow:inset 0 0 0 1px var(--paper);
+}
+.card:hover{ transform:translateY(-3px); box-shadow:0 10px 22px rgba(21,52,80,0.12); border-color:var(--teal); }
+.card .code{ font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--teal); display:block; margin-bottom:10px; padding-left:16px; letter-spacing:1px; }
+.card .icon{ font-size:1.6rem; margin-bottom:8px; }
+.card h3{ margin:0 0 6px; font-size:1.05rem; }
+.card p{ margin:0; font-size:0.88rem; color:#5b6470; }
+.card.hidden{ display:none; }
+
+.chips{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:8px; }
+.chip{
+  font-family:'IBM Plex Mono',monospace; font-size:0.8rem; padding:8px 14px; border-radius:999px;
+  border:1px solid var(--line); background:#fff; cursor:pointer; color:var(--ink);
+}
+.chip.active, .chip:hover{ background:var(--navy); color:#fff; border-color:var(--navy); }
+
+/* ---- TOOL VIEW ---- */
+.toolhead{ display:flex; align-items:center; gap:14px; margin-bottom:8px; }
+.back{ display:inline-flex; align-items:center; gap:6px; text-decoration:none; color:var(--teal); font-weight:600; font-size:0.9rem; }
+.toolbox{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:26px;
+  margin-top:18px;
+}
+.field{ margin-bottom:16px; }
+.field label{ display:block; font-weight:600; font-size:0.9rem; margin-bottom:6px; }
+.field .hint{ font-size:0.8rem; color:#5b6470; margin-top:4px; }
+input[type=text], input[type=number], input[type=url], select, textarea{
+  width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--ink);
+}
+textarea{ resize:vertical; min-height:80px; }
+input[type=file]{ width:100%; padding:11px 0; }
+.row{ display:flex; gap:14px; flex-wrap:wrap; }
+.row .field{ flex:1; min-width:160px; }
+.btn{
+  display:inline-flex; align-items:center; gap:8px; background:var(--amber); color:var(--navy-2);
+  border:none; padding:12px 22px; border-radius:6px; font-weight:700; cursor:pointer; font-size:0.95rem;
+}
+.btn:hover{ filter:brightness(1.05); }
+.btn.secondary{ background:transparent; color:var(--navy); border:1.5px solid var(--navy); }
+.btn.small{ padding:8px 14px; font-size:0.85rem; }
+.btn:disabled{ opacity:0.5; cursor:not-allowed; }
+.result{ margin-top:20px; padding-top:20px; border-top:1px dashed var(--line); }
+.thumbs{ display:flex; flex-wrap:wrap; gap:12px; margin-top:12px; }
+.thumb{ border:1px solid var(--line); border-radius:8px; padding:8px; background:#fff; width:140px; text-align:center; }
+.thumb img{ max-width:100%; border-radius:4px; display:block; margin-bottom:6px; }
+.stat-row{ display:flex; gap:24px; flex-wrap:wrap; margin-top:14px; }
+.stat{ background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:14px 18px; min-width:140px; }
+.stat .num{ font-family:'IBM Plex Mono',monospace; font-size:1.3rem; font-weight:600; color:var(--navy); display:block; }
+.stat .lbl{ font-size:0.78rem; color:#5b6470; }
+.itemrow{ display:flex; gap:8px; margin-bottom:8px; align-items:center; }
+.itemrow input{ flex:1; }
+.itemrow input.qty, .itemrow input.price{ max-width:110px; }
+.remove-x{ background:none; border:none; color:var(--danger); font-size:1.2rem; cursor:pointer; padding:4px 8px; }
+.captionCard{ background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:14px 16px; margin-bottom:10px; font-size:0.95rem; white-space:pre-wrap; }
+.copy-btn{ font-size:0.78rem; margin-top:8px; }
+#qrbox{ display:flex; justify-content:center; padding:20px; background:#fff; border:1px dashed var(--line); border-radius:8px; margin-top:14px; }
+.empty{ font-size:0.9rem; color:#5b6470; }
+
+footer{ background:var(--navy-2); color:#B9C3CC; padding:30px 0; margin-top:40px; }
+footer .wrap{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; font-size:0.85rem; }
+footer a{ color:#DCE3E8; text-decoration:none; margin-left:16px; }
+footer a:hover{ color:var(--amber); }
+
+.ad-slot{
+  border:1.5px dashed var(--line); border-radius:8px; padding:22px; text-align:center; color:#8a8f97;
+  background:repeating-linear-gradient(45deg, rgba(0,0,0,0.015), rgba(0,0,0,0.015) 10px, transparent 10px, transparent 20px);
+  margin:32px 0; font-size:0.85rem;
+}
+.ad-slot .ad-label{ font-family:'IBM Plex Mono',monospace; font-size:0.7rem; letter-spacing:2px; color:#a8adb4; display:block; margin-bottom:6px; }
+
+.blog-card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:18px; text-decoration:none; color:var(--ink); display:block; }
+.blog-card:hover{ border-color:var(--teal); }
+.blog-card .cat{ font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--teal); }
+.blog-card h3{ margin:8px 0 6px; font-size:1.05rem; }
+.blog-card p{ margin:0; font-size:0.88rem; color:#5b6470; }
+article.post p{ margin:0 0 16px; font-size:1rem; line-height:1.7; }
+article.post .meta{ font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--teal); margin-bottom:6px; }
+.infopage p{ margin:0 0 14px; line-height:1.7; }
+.infopage h2{ font-size:1.1rem; margin:24px 0 8px; }
+.infopage ul{ line-height:1.8; }
+
+@media (max-width:640px){
+  .hero h1{ font-size:1.7rem; }
+  .navlinks{ gap:12px; }
+  .navlinks a{ font-size:0.85rem; }
+  footer .wrap{ flex-direction:column; }
+  footer a{ margin-left:0; margin-right:16px; }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+
+<script>
+if (window.pdfjsLib) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+}
+
+const TOOLS = [
+  {id:'jpg2pdf', code:'TK-01', cat:'PDF', icon:'🖼️', title:'JPG ke PDF', desc:'Gabungin beberapa gambar jadi satu file PDF.', popular:true},
+  {id:'pdf2jpg', code:'TK-02', cat:'PDF', icon:'📄', title:'PDF ke JPG', desc:'Ubah tiap halaman PDF jadi gambar JPG.', popular:true},
+  {id:'compress-img', code:'TK-03', cat:'Gambar', icon:'🗜️', title:'Kompres Gambar', desc:'Perkecil ukuran file gambar tanpa ribet.', popular:true},
+  {id:'resize-img', code:'TK-04', cat:'Gambar', icon:'📐', title:'Resize Gambar', desc:'Ubah ukuran gambar sesuai kebutuhan.', popular:false},
+  {id:'qrcode', code:'TK-05', cat:'Umum', icon:'▦', title:'Generator QR Code', desc:'Bikin QR code dari link atau teks.', popular:true},
+  {id:'calc-profit', code:'TK-06', cat:'Kalkulator Bisnis', icon:'💰', title:'Kalkulator Keuntungan', desc:'Hitung untung bersih dari jualanmu.', popular:true},
+  {id:'calc-price', code:'TK-07', cat:'Kalkulator Bisnis', icon:'🏷️', title:'Kalkulator Harga Jual', desc:'Tentuin harga jual dari modal & margin.', popular:false},
+  {id:'gen-name', code:'TK-08', cat:'AI Tools', icon:'✨', title:'Generator Nama Bisnis', desc:'Cari ide nama usaha dalam sekejap.', popular:false},
+  {id:'gen-caption', code:'TK-09', cat:'AI Tools', icon:'📝', title:'Generator Caption', desc:'Bikin caption jualan buat medsos.', popular:false},
+  {id:'gen-invoice', code:'TK-10', cat:'Template', icon:'🧾', title:'Generator Invoice', desc:'Buat & download invoice profesional.', popular:false},
+
+  {id:'merge-pdf', code:'TK-11', cat:'PDF', icon:'📎', title:'Gabung PDF', desc:'Satukan beberapa file PDF jadi satu.', popular:false},
+  {id:'rotate-pdf', code:'TK-12', cat:'PDF', icon:'🔄', title:'Putar PDF', desc:'Putar halaman PDF yang kebalik orientasinya.', popular:false},
+  {id:'pdf-to-text', code:'TK-13', cat:'PDF', icon:'🔤', title:'PDF ke Teks', desc:'Ambil semua teks dari file PDF.', popular:false},
+
+  {id:'jpg-to-png', code:'TK-14', cat:'Gambar', icon:'🖼️', title:'JPG ke PNG', desc:'Ubah format gambar JPG jadi PNG.', popular:false},
+  {id:'png-to-jpg', code:'TK-15', cat:'Gambar', icon:'🖼️', title:'PNG ke JPG', desc:'Ubah format gambar PNG jadi JPG.', popular:false},
+  {id:'crop-img', code:'TK-16', cat:'Gambar', icon:'✂️', title:'Crop Gambar', desc:'Potong bagian gambar yang kamu mau.', popular:false},
+  {id:'rotate-img', code:'TK-17', cat:'Gambar', icon:'🔃', title:'Putar & Balik Gambar', desc:'Putar 90° atau balik gambar horizontal/vertikal.', popular:false},
+  {id:'watermark-img', code:'TK-18', cat:'Gambar', icon:'💧', title:'Watermark Gambar', desc:'Tambah teks watermark ke gambar.', popular:false},
+  {id:'grayscale-img', code:'TK-19', cat:'Gambar', icon:'⚫', title:'Gambar Hitam Putih', desc:'Ubah gambar berwarna jadi hitam putih.', popular:false},
+  {id:'img-to-base64', code:'TK-20', cat:'Gambar', icon:'🔡', title:'Gambar ke Base64', desc:'Ubah gambar jadi teks base64 buat kode.', popular:false},
+
+  {id:'calc-bep', code:'TK-21', cat:'Kalkulator Bisnis', icon:'📊', title:'Kalkulator BEP', desc:'Hitung titik impas (break even point) usahamu.', popular:false},
+  {id:'calc-cicilan', code:'TK-22', cat:'Kalkulator Bisnis', icon:'🏦', title:'Kalkulator Cicilan', desc:'Hitung cicilan per bulan dari pinjaman.', popular:false},
+  {id:'calc-diskon', code:'TK-23', cat:'Kalkulator Bisnis', icon:'🏷️', title:'Kalkulator Diskon', desc:'Hitung harga setelah diskon, termasuk diskon ganda.', popular:false},
+  {id:'calc-ppn', code:'TK-24', cat:'Kalkulator Bisnis', icon:'🧾', title:'Kalkulator PPN', desc:'Hitung harga sebelum/sesudah pajak PPN.', popular:false},
+  {id:'calc-roi', code:'TK-25', cat:'Kalkulator Bisnis', icon:'📈', title:'Kalkulator ROI', desc:'Hitung return on investment dari modalmu.', popular:false},
+  {id:'calc-zakat', code:'TK-26', cat:'Kalkulator Bisnis', icon:'🤲', title:'Kalkulator Zakat Penghasilan', desc:'Hitung zakat profesi dari penghasilan bulanan.', popular:false},
+  {id:'calc-lembur', code:'TK-27', cat:'Kalkulator Bisnis', icon:'⏱️', title:'Kalkulator Lembur', desc:'Hitung upah lembur karyawan per jam.', popular:false},
+
+  {id:'gen-hashtag', code:'TK-28', cat:'AI Tools', icon:'#️⃣', title:'Generator Hashtag', desc:'Bikin kumpulan hashtag relevan buat postingan.', popular:false},
+  {id:'gen-bio', code:'TK-29', cat:'AI Tools', icon:'👤', title:'Generator Bio Instagram', desc:'Bikin ide bio Instagram yang menarik.', popular:false},
+  {id:'gen-idekonten', code:'TK-30', cat:'AI Tools', icon:'💡', title:'Generator Ide Konten', desc:'Dapetin ide konten sesuai niche kamu.', popular:false},
+  {id:'gen-promptai', code:'TK-31', cat:'AI Tools', icon:'🧠', title:'Generator Prompt AI', desc:'Susun prompt AI yang lebih terstruktur.', popular:false},
+  {id:'gen-ucapan', code:'TK-32', cat:'AI Tools', icon:'🎉', title:'Generator Ucapan', desc:'Bikin ucapan buat berbagai momen spesial.', popular:false},
+  {id:'gen-password', code:'TK-33', cat:'AI Tools', icon:'🔑', title:'Generator Password Aman', desc:'Bikin password acak yang susah ditebak.', popular:true},
+
+  {id:'template-lamaran', code:'TK-34', cat:'Template', icon:'✉️', title:'Surat Lamaran Kerja', desc:'Buat surat lamaran kerja langsung jadi PDF.', popular:false},
+  {id:'template-cv', code:'TK-35', cat:'Template', icon:'📋', title:'CV Sederhana', desc:'Susun CV rapi dalam format PDF.', popular:false},
+  {id:'template-kwitansi', code:'TK-36', cat:'Template', icon:'🧾', title:'Kwitansi', desc:'Buat kwitansi pembayaran lengkap dengan terbilang.', popular:false},
+
+  {id:'conv-panjang', code:'TK-37', cat:'Konverter', icon:'📏', title:'Konversi Panjang', desc:'Ubah satuan meter, cm, inch, dan lainnya.', popular:false},
+  {id:'conv-berat', code:'TK-38', cat:'Konverter', icon:'⚖️', title:'Konversi Berat', desc:'Ubah satuan kg, gram, ons, dan lainnya.', popular:false},
+  {id:'conv-suhu', code:'TK-39', cat:'Konverter', icon:'🌡️', title:'Konversi Suhu', desc:'Ubah Celsius, Fahrenheit, Kelvin, Reamur.', popular:false},
+  {id:'conv-kurs', code:'TK-40', cat:'Konverter', icon:'💱', title:'Kalkulator Kurs Manual', desc:'Konversi mata uang pakai kurs yang kamu isi sendiri.', popular:false},
+  {id:'conv-waktu', code:'TK-41', cat:'Konverter', icon:'🕐', title:'Konversi Zona Waktu', desc:'Cocokkan jam antar zona waktu WIB, WITA, WIT, dan dunia.', popular:false},
+  {id:'angka-terbilang', code:'TK-42', cat:'Konverter', icon:'🔢', title:'Angka ke Terbilang', desc:'Ubah angka jadi tulisan huruf, cocok buat kwitansi.', popular:false},
+
+  {id:'word-counter', code:'TK-43', cat:'Teks & Produktivitas', icon:'📝', title:'Hitung Kata & Karakter', desc:'Hitung jumlah kata, karakter, dan estimasi waktu baca.', popular:true},
+  {id:'case-converter', code:'TK-44', cat:'Teks & Produktivitas', icon:'🔠', title:'Ubah Huruf Besar/Kecil', desc:'Ubah teks jadi UPPERCASE, lowercase, atau Title Case.', popular:false},
+  {id:'slug-generator', code:'TK-45', cat:'Teks & Produktivitas', icon:'🔗', title:'Generator Slug URL', desc:'Ubah judul jadi slug URL yang rapi.', popular:false},
+  {id:'password-checker', code:'TK-46', cat:'Teks & Produktivitas', icon:'🛡️', title:'Cek Kekuatan Password', desc:'Cek seberapa kuat password yang kamu pakai.', popular:false},
+  {id:'remove-duplicate-lines', code:'TK-47', cat:'Teks & Produktivitas', icon:'🧹', title:'Bersihkan Baris Teks', desc:'Hapus baris kosong, duplikat, atau urutkan teks.', popular:false},
+  {id:'random-picker', code:'TK-48', cat:'Teks & Produktivitas', icon:'🎲', title:'Pengocok Nama / Undian', desc:'Kocok daftar nama buat undian atau pilih giliran.', popular:false},
+  {id:'calc-umur', code:'TK-49', cat:'Teks & Produktivitas', icon:'🎂', title:'Kalkulator Umur', desc:'Hitung umur persis dari tanggal lahir.', popular:false},
+  {id:'stopwatch', code:'TK-50', cat:'Teks & Produktivitas', icon:'⏲️', title:'Stopwatch & Timer', desc:'Stopwatch dan hitung mundur langsung di browser.', popular:false},
+];
+
+function toolById(id){ return TOOLS.find(t=>t.id===id); }
+
+function cardHTML(t){
+  return `<a class="card" href="#${t.id}" data-title="${t.title.toLowerCase()}" data-desc="${t.desc.toLowerCase()}" data-cat="${t.cat}">
+    <span class="code">${t.code}</span>
+    <div class="icon">${t.icon}</div>
+    <h3>${t.title}</h3>
+    <p>${t.desc}</p>
+  </a>`;
+}
+
+function homeHTML(){
+  const categories = [...new Set(TOOLS.map(t=>t.cat))];
+  const popular = TOOLS.filter(t=>t.popular);
+  return `
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">10 tools, gratis, tanpa daftar</p>
+      <h1 class="display">Semua tools yang bantu kerjaanmu, kumpul di satu tempat.</h1>
+      <p>Convert file, kompres gambar, hitung untung jualan, sampai bikin invoice — beres di sini, langsung dari browser.</p>
+      <div class="searchbox">
+        <input id="searchInput" type="text" placeholder="Cari tools... misal 'kompres' atau 'invoice'">
+        <span class="icon">🔍</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="block wrap">
+    <div class="section-head"><span class="tag">POPULER</span><h2>Tools paling sering dipakai</h2></div>
+    <div class="grid" id="popularGrid">
+      ${popular.map(cardHTML).join('')}
+    </div>
+  </section>
+
+  <div class="wrap">${adSlotHTML()}</div>
+
+  <section class="block wrap" id="all-tools">
+    <div class="section-head"><span class="tag">KATALOG</span><h2>Semua tools</h2></div>
+    <div class="chips" id="catChips">
+      <span class="chip active" data-cat="all">Semua</span>
+      ${categories.map(c=>`<span class="chip" data-cat="${c}">${c}</span>`).join('')}
+    </div>
+    <div class="grid" id="toolsGrid" style="margin-top:18px;">
+      ${TOOLS.map(cardHTML).join('')}
+    </div>
+    <p class="empty" id="emptyMsg" style="display:none; margin-top:16px;">Nggak ada tools yang cocok. Coba kata kunci lain.</p>
+  </section>
+
+  <section class="block wrap">
+    <div class="section-head"><span class="tag">BLOG</span><h2>Artikel terbaru</h2></div>
+    <div class="grid">
+      ${BLOG_POSTS.slice(0,3).map(blogCardHTML).join('')}
+    </div>
+    <p style="margin-top:16px;"><a href="#blog">Lihat semua artikel &rarr;</a></p>
+  </section>
+
+  <div class="wrap">${adSlotHTML()}</div>
+  `;
+}
+
+function initHome(){
+  const search = document.getElementById('searchInput');
+  const cards = () => Array.from(document.querySelectorAll('#toolsGrid .card'));
+  const emptyMsg = document.getElementById('emptyMsg');
+  let activeCat = 'all';
+
+  function applyFilter(){
+    const q = (search.value || '').trim().toLowerCase();
+    let visibleCount = 0;
+    cards().forEach(c=>{
+      const matchesText = !q || c.dataset.title.includes(q) || c.dataset.desc.includes(q);
+      const matchesCat = activeCat === 'all' || c.dataset.cat === activeCat;
+      const show = matchesText && matchesCat;
+      c.classList.toggle('hidden', !show);
+      if(show) visibleCount++;
+    });
+    emptyMsg.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+
+  search.addEventListener('input', applyFilter);
+  document.querySelectorAll('#catChips .chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      document.querySelectorAll('#catChips .chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      activeCat = chip.dataset.cat;
+      applyFilter();
+      document.getElementById('all-tools').scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+}
+
+function toolShell(t, bodyHTML){
+  return `
+  <section class="block wrap">
+    <a class="back" href="#home">&larr; Semua tools</a>
+    <div class="toolhead" style="margin-top:14px;">
+      <div class="icon" style="font-size:1.8rem;">${t.icon}</div>
+      <div>
+        <span class="code mono" style="padding-left:0;">${t.code} · ${t.cat}</span>
+        <h1 class="display" style="font-size:1.6rem; margin:2px 0 0;">${t.title}</h1>
+      </div>
+    </div>
+    <div class="toolbox">
+      ${bodyHTML}
+    </div>
+    ${adSlotHTML()}
+  </section>`;
+}
+
+function adSlotHTML(text){
+  return `<div class="ad-slot"><span class="ad-label">IKLAN</span>${text || 'Slot iklan — ganti dengan kode AdSense atau iklan pilihanmu'}</div>`;
+}
+
+function fmtBytes(bytes){
+  if(bytes < 1024) return bytes + ' B';
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1024/1024).toFixed(2) + ' MB';
+}
+function fmtRupiah(n){
+  if(isNaN(n)) return 'Rp0';
+  return 'Rp' + Math.round(n).toLocaleString('id-ID');
+}
+
+/* ================= JPG -> PDF ================= */
+function jpg2pdfHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="jp-files">Pilih gambar (bisa lebih dari satu)</label>
+      <input type="file" id="jp-files" accept="image/*" multiple>
+      <p class="hint">Urutan file = urutan halaman PDF.</p>
+    </div>
+    <div class="thumbs" id="jp-thumbs"></div>
+    <button class="btn" id="jp-make" disabled style="margin-top:16px;">Buat PDF</button>
+    <div class="result" id="jp-result" style="display:none;"></div>
+  `);
+}
+function initJpg2Pdf(){
+  const input = document.getElementById('jp-files');
+  const thumbs = document.getElementById('jp-thumbs');
+  const makeBtn = document.getElementById('jp-make');
+  const result = document.getElementById('jp-result');
+  let files = [];
+
+  input.addEventListener('change', e=>{
+    files = Array.from(e.target.files);
+    thumbs.innerHTML = '';
+    files.forEach(f=>{
+      const url = URL.createObjectURL(f);
+      const div = document.createElement('div');
+      div.className = 'thumb';
+      div.innerHTML = `<img src="${url}" alt="${f.name}"><span style="font-size:0.72rem;">${f.name}</span>`;
+      thumbs.appendChild(div);
+    });
+    makeBtn.disabled = files.length === 0;
+    result.style.display = 'none';
+  });
+
+  makeBtn.addEventListener('click', async ()=>{
+    if(!files.length) return;
+    makeBtn.disabled = true;
+    makeBtn.textContent = 'Memproses...';
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({unit:'pt', format:'a4'});
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const margin = 24;
+
+    for (let i=0; i<files.length; i++){
+      const dataUrl = await new Promise(res=>{
+        const reader = new FileReader();
+        reader.onload = ()=>res(reader.result);
+        reader.readAsDataURL(files[i]);
+      });
+      const img = await new Promise(res=>{
+        const im = new Image();
+        im.onload = ()=>res(im);
+        im.src = dataUrl;
+      });
+      const maxW = pageW - margin*2;
+      const maxH = pageH - margin*2;
+      let w = img.width, h = img.height;
+      const ratio = Math.min(maxW/w, maxH/h);
+      w = w*ratio; h = h*ratio;
+      const x = (pageW - w)/2, y = (pageH - h)/2;
+      if(i>0) pdf.addPage();
+      const fmt = files[i].type.includes('png') ? 'PNG' : 'JPEG';
+      pdf.addImage(dataUrl, fmt, x, y, w, h);
+    }
+    const blob = pdf.output('blob');
+    const url = URL.createObjectURL(blob);
+    result.style.display = 'block';
+    result.innerHTML = `<p>PDF siap, ${files.length} halaman.</p><a class="btn" href="${url}" download="toolkita-gabungan.pdf">Download PDF</a>`;
+    makeBtn.disabled = false;
+    makeBtn.textContent = 'Buat PDF';
+  });
+}
+
+/* ================= PDF -> JPG ================= */
+function pdf2jpgHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="pj-file">Pilih file PDF</label>
+      <input type="file" id="pj-file" accept="application/pdf">
+    </div>
+    <div class="result" id="pj-result" style="display:none;">
+      <div class="thumbs" id="pj-thumbs"></div>
+      <button class="btn small" id="pj-zip" style="margin-top:14px;">Download Semua (ZIP)</button>
+    </div>
+  `);
+}
+function initPdf2Jpg(){
+  const input = document.getElementById('pj-file');
+  const result = document.getElementById('pj-result');
+  const thumbs = document.getElementById('pj-thumbs');
+  const zipBtn = document.getElementById('pj-zip');
+  let pageBlobs = [];
+
+  input.addEventListener('change', async e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    thumbs.innerHTML = '<p class="empty">Memproses halaman...</p>';
+    result.style.display = 'block';
+    pageBlobs = [];
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+    thumbs.innerHTML = '';
+    for(let i=1; i<=pdf.numPages; i++){
+      const page = await pdf.getPage(i);
+      const viewport = page.getViewport({scale: 1.5});
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+      pageBlobs.push({name:`halaman-${i}.jpg`, dataUrl});
+      const div = document.createElement('div');
+      div.className = 'thumb';
+      div.innerHTML = `<img src="${dataUrl}" alt="Halaman ${i}"><span style="font-size:0.72rem;">Hal ${i}</span><br><a class="mono" style="font-size:0.72rem;" href="${dataUrl}" download="halaman-${i}.jpg">Download</a>`;
+      thumbs.appendChild(div);
+    }
+  });
+
+  zipBtn.addEventListener('click', async ()=>{
+    if(!pageBlobs.length) return;
+    const zip = new JSZip();
+    pageBlobs.forEach(p=>{
+      const base64 = p.dataUrl.split(',')[1];
+      zip.file(p.name, base64, {base64:true});
+    });
+    const content = await zip.generateAsync({type:'blob'});
+    const url = URL.createObjectURL(content);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'toolkita-halaman.zip'; a.click();
+  });
+}
+
+/* ================= Kompres Gambar ================= */
+function compressImgHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="ci-file">Pilih gambar</label>
+      <input type="file" id="ci-file" accept="image/*">
+    </div>
+    <div class="field">
+      <label for="ci-quality">Kualitas: <span id="ci-qval">70</span>%</label>
+      <input type="range" id="ci-quality" min="10" max="95" value="70">
+    </div>
+    <div class="result" id="ci-result" style="display:none;">
+      <div class="stat-row">
+        <div class="stat"><span class="num" id="ci-before">-</span><span class="lbl">Ukuran asli</span></div>
+        <div class="stat"><span class="num" id="ci-after">-</span><span class="lbl">Ukuran setelah kompres</span></div>
+      </div>
+      <a class="btn" id="ci-download" style="margin-top:16px;" download="toolkita-kompres.jpg">Download Gambar</a>
+    </div>
+  `);
+}
+function initCompressImg(){
+  const fileInput = document.getElementById('ci-file');
+  const quality = document.getElementById('ci-quality');
+  const qval = document.getElementById('ci-qval');
+  const result = document.getElementById('ci-result');
+  const beforeStat = document.getElementById('ci-before');
+  const afterStat = document.getElementById('ci-after');
+  const dlBtn = document.getElementById('ci-download');
+  let img = null, originalSize = 0;
+
+  function process(){
+    if(!img) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width; canvas.height = img.height;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    const q = Number(quality.value)/100;
+    const dataUrl = canvas.toDataURL('image/jpeg', q);
+    const approxBytes = Math.round((dataUrl.length - dataUrl.indexOf(',') - 1) * 0.75);
+    beforeStat.textContent = fmtBytes(originalSize);
+    afterStat.textContent = fmtBytes(approxBytes);
+    dlBtn.href = dataUrl;
+    result.style.display = 'block';
+  }
+
+  quality.addEventListener('input', ()=>{ qval.textContent = quality.value; process(); });
+  fileInput.addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    originalSize = file.size;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      img = new Image();
+      img.onload = process;
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ================= Resize Gambar ================= */
+function resizeImgHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="ri-file">Pilih gambar</label>
+      <input type="file" id="ri-file" accept="image/*">
+    </div>
+    <div class="row">
+      <div class="field"><label for="ri-w">Lebar (px)</label><input type="number" id="ri-w" min="1"></div>
+      <div class="field"><label for="ri-h">Tinggi (px)</label><input type="number" id="ri-h" min="1"></div>
+    </div>
+    <div class="field">
+      <label><input type="checkbox" id="ri-lock" checked style="width:auto; margin-right:6px;">Kunci rasio gambar</label>
+    </div>
+    <div class="result" id="ri-result" style="display:none;">
+      <img id="ri-preview" style="max-width:260px; border:1px solid var(--line); border-radius:8px;">
+      <br><a class="btn" id="ri-download" style="margin-top:16px;" download="toolkita-resize.jpg">Download Gambar</a>
+    </div>
+  `);
+}
+function initResizeImg(){
+  const fileInput = document.getElementById('ri-file');
+  const wInput = document.getElementById('ri-w');
+  const hInput = document.getElementById('ri-h');
+  const lock = document.getElementById('ri-lock');
+  const result = document.getElementById('ri-result');
+  const preview = document.getElementById('ri-preview');
+  const dlBtn = document.getElementById('ri-download');
+  let img = null, ratio = 1;
+
+  fileInput.addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      img = new Image();
+      img.onload = ()=>{
+        ratio = img.width / img.height;
+        wInput.value = img.width;
+        hInput.value = img.height;
+        renderResize();
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  wInput.addEventListener('input', ()=>{
+    if(lock.checked && img) hInput.value = Math.round(Number(wInput.value) / ratio);
+    renderResize();
+  });
+  hInput.addEventListener('input', ()=>{
+    if(lock.checked && img) wInput.value = Math.round(Number(hInput.value) * ratio);
+    renderResize();
+  });
+
+  function renderResize(){
+    if(!img || !wInput.value || !hInput.value) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = Number(wInput.value);
+    canvas.height = Number(hInput.value);
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    preview.src = dataUrl;
+    dlBtn.href = dataUrl;
+    result.style.display = 'block';
+  }
+}
+
+/* ================= QR Code ================= */
+function qrcodeHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="qr-text">Link atau teks</label>
+      <input type="text" id="qr-text" placeholder="https://... atau teks bebas">
+    </div>
+    <div class="field">
+      <label for="qr-size">Ukuran</label>
+      <select id="qr-size">
+        <option value="200">Kecil (200px)</option>
+        <option value="300" selected>Sedang (300px)</option>
+        <option value="500">Besar (500px)</option>
+      </select>
+    </div>
+    <button class="btn" id="qr-make">Buat QR Code</button>
+    <div id="qrbox" style="display:none;"></div>
+    <div style="text-align:center;">
+      <a class="btn small" id="qr-download" style="display:none; margin-top:14px;" download="toolkita-qrcode.png">Download PNG</a>
+    </div>
+  `);
+}
+function initQrcode(){
+  const textInput = document.getElementById('qr-text');
+  const sizeSelect = document.getElementById('qr-size');
+  const makeBtn = document.getElementById('qr-make');
+  const box = document.getElementById('qrbox');
+  const dlBtn = document.getElementById('qr-download');
+
+  makeBtn.addEventListener('click', ()=>{
+    const text = textInput.value.trim();
+    if(!text) return;
+    box.innerHTML = '';
+    box.style.display = 'flex';
+    const size = Number(sizeSelect.value);
+    new QRCode(box, {text, width:size, height:size, correctLevel: QRCode.CorrectLevel.M});
+    setTimeout(()=>{
+      const img = box.querySelector('img');
+      const canvas = box.querySelector('canvas');
+      const src = canvas ? canvas.toDataURL('image/png') : (img ? img.src : null);
+      if(src){ dlBtn.href = src; dlBtn.style.display = 'inline-flex'; }
+    }, 150);
+  });
+}
+
+/* ================= Kalkulator Keuntungan ================= */
+function calcProfitHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="cp-modal">Modal per unit</label><input type="number" id="cp-modal" placeholder="misal 15000"></div>
+      <div class="field"><label for="cp-jual">Harga jual per unit</label><input type="number" id="cp-jual" placeholder="misal 25000"></div>
+      <div class="field"><label for="cp-qty">Jumlah terjual</label><input type="number" id="cp-qty" value="1" min="1"></div>
+    </div>
+    <div class="result" id="cp-result">
+      <div class="stat-row">
+        <div class="stat"><span class="num" id="cp-untung-unit">Rp0</span><span class="lbl">Untung per unit</span></div>
+        <div class="stat"><span class="num" id="cp-untung-total">Rp0</span><span class="lbl">Total untung</span></div>
+        <div class="stat"><span class="num" id="cp-margin">0%</span><span class="lbl">Margin</span></div>
+      </div>
+    </div>
+  `);
+}
+function initCalcProfit(){
+  const modal = document.getElementById('cp-modal');
+  const jual = document.getElementById('cp-jual');
+  const qty = document.getElementById('cp-qty');
+  const uUnit = document.getElementById('cp-untung-unit');
+  const uTotal = document.getElementById('cp-untung-total');
+  const margin = document.getElementById('cp-margin');
+  function calc(){
+    const m = Number(modal.value)||0, j = Number(jual.value)||0, q = Number(qty.value)||0;
+    const untung = j - m;
+    uUnit.textContent = fmtRupiah(untung);
+    uTotal.textContent = fmtRupiah(untung*q);
+    margin.textContent = j>0 ? ((untung/j)*100).toFixed(1)+'%' : '0%';
+  }
+  [modal,jual,qty].forEach(el=>el.addEventListener('input', calc));
+}
+
+/* ================= Kalkulator Harga Jual ================= */
+function calcPriceHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="pr-modal">Modal per unit</label><input type="number" id="pr-modal" placeholder="misal 15000"></div>
+      <div class="field"><label for="pr-margin">Margin keuntungan (%)</label><input type="number" id="pr-margin" placeholder="misal 30"></div>
+    </div>
+    <div class="result" id="pr-result">
+      <div class="stat-row">
+        <div class="stat"><span class="num" id="pr-harga">Rp0</span><span class="lbl">Harga jual disarankan</span></div>
+        <div class="stat"><span class="num" id="pr-untung">Rp0</span><span class="lbl">Untung per unit</span></div>
+      </div>
+      <p class="hint">Margin dihitung dari harga jual (bukan markup dari modal).</p>
+    </div>
+  `);
+}
+function initCalcPrice(){
+  const modal = document.getElementById('pr-modal');
+  const margin = document.getElementById('pr-margin');
+  const harga = document.getElementById('pr-harga');
+  const untung = document.getElementById('pr-untung');
+  function calc(){
+    const m = Number(modal.value)||0, pct = Number(margin.value)||0;
+    if(pct >= 100){ harga.textContent = '—'; untung.textContent = '—'; return; }
+    const h = m / (1 - pct/100);
+    harga.textContent = fmtRupiah(h);
+    untung.textContent = fmtRupiah(h - m);
+  }
+  [modal,margin].forEach(el=>el.addEventListener('input', calc));
+}
+
+/* ================= Generator Nama Bisnis ================= */
+const NAME_PREFIX = {
+  'Kuliner': ['Warung','Dapur','Kedai','Rasa','Meja'],
+  'Fashion': ['Griya','Studio','House of','Butik','Gaya'],
+  'Jasa': ['Mitra','Solusi','Sinergi','Karya','Layanan'],
+  'Digital': ['Studio','Lab','Digi','Byte','Pixel'],
+  'Umum': ['Toko','Griya','Rumah','Sentra','Karya']
+};
+const NAME_SUFFIX = ['Jaya','Nusantara','Kita','Sejahtera','Prima','id','Bersama','Mandiri','Cipta','Utama'];
+function genNameHTML(t){
+  const cats = Object.keys(NAME_PREFIX);
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="gn-keyword">Kata kunci usaha</label><input type="text" id="gn-keyword" placeholder="misal 'kopi', 'jahit', 'laundry'"></div>
+      <div class="field"><label for="gn-cat">Kategori</label>
+        <select id="gn-cat">${cats.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
+      </div>
+    </div>
+    <button class="btn" id="gn-make">Cari Nama</button>
+    <div class="result" id="gn-result" style="display:none;"></div>
+  `);
+}
+function initGenName(){
+  const keyword = document.getElementById('gn-keyword');
+  const cat = document.getElementById('gn-cat');
+  const makeBtn = document.getElementById('gn-make');
+  const result = document.getElementById('gn-result');
+  function pick(arr,n){ const c=[...arr]; const out=[]; while(out.length<n && c.length){ out.push(c.splice(Math.floor(Math.random()*c.length),1)[0]); } return out; }
+  makeBtn.addEventListener('click', ()=>{
+    const kw = keyword.value.trim() || 'Usaha';
+    const kwCap = kw.charAt(0).toUpperCase()+kw.slice(1);
+    const prefixes = NAME_PREFIX[cat.value];
+    const names = new Set();
+    while(names.size < 8){
+      const usePrefix = Math.random() > 0.35;
+      const p = pick(prefixes,1)[0];
+      const s = pick(NAME_SUFFIX,1)[0];
+      if(usePrefix) names.add(`${p} ${kwCap}`);
+      else names.add(`${kwCap} ${s}`);
+    }
+    result.style.display = 'block';
+    result.innerHTML = `<div class="grid">${[...names].map(n=>`<div class="captionCard" style="margin:0;">${n}</div>`).join('')}</div>`;
+  });
+}
+
+/* ================= Generator Caption ================= */
+const CAPTION_TEMPLATES = {
+  santai: [
+    "Udah coba {produk} belum? Beneran {manfaat}, cobain deh~ 😊",
+    "Hari ini mood-nya {produk} dulu ah. {manfaat}, worth it banget!",
+    "PSA: {produk} sekarang ready. {manfaat} loh, jangan sampai kehabisan 👀"
+  ],
+  formal: [
+    "Perkenalkan {produk}, hadir untuk memberikan {manfaat}. Tersedia sekarang.",
+    "Kami dengan bangga menghadirkan {produk} yang {manfaat} untuk kebutuhan Anda.",
+    "{produk} kini tersedia. Dirancang untuk {manfaat}. Pesan sekarang juga."
+  ],
+  lucu: [
+    "Dompet nangis liat {produk}? Nggak, karena {manfaat} bikin worth it 😂",
+    "{produk} masuk chat. Alasan gak checkout: nggak ada, soalnya {manfaat} 🤣",
+    "Warning: {produk} bikin nagih. Efek samping: {manfaat} terus-terusan."
+  ],
+  jualan: [
+    "🔥 PROMO {produk}! {manfaat}. Stok terbatas, order sekarang!",
+    "Buruan order {produk} sebelum kehabisan. {manfaat}, dijamin puas!",
+    "{produk} lagi diskon spesial hari ini. {manfaat} — cek chat buat order 🛒"
+  ]
+};
+function genCaptionHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="gc-produk">Nama produk</label><input type="text" id="gc-produk" placeholder="misal 'Kopi Susu Gula Aren'"></div>
+      <div class="field"><label for="gc-manfaat">Manfaat / keunggulan</label><input type="text" id="gc-manfaat" placeholder="misal 'manis pas, gak eneg'"></div>
+    </div>
+    <div class="field">
+      <label for="gc-tone">Gaya bahasa</label>
+      <select id="gc-tone">
+        <option value="santai">Santai</option>
+        <option value="jualan">Jualan / promo</option>
+        <option value="lucu">Lucu</option>
+        <option value="formal">Formal</option>
+      </select>
+    </div>
+    <button class="btn" id="gc-make">Bikin Caption</button>
+    <div class="result" id="gc-result" style="display:none;"></div>
+  `);
+}
+function initGenCaption(){
+  const produk = document.getElementById('gc-produk');
+  const manfaat = document.getElementById('gc-manfaat');
+  const tone = document.getElementById('gc-tone');
+  const makeBtn = document.getElementById('gc-make');
+  const result = document.getElementById('gc-result');
+  makeBtn.addEventListener('click', ()=>{
+    const p = produk.value.trim() || 'produk ini';
+    const m = manfaat.value.trim() || 'bikin harimu lebih baik';
+    const templates = CAPTION_TEMPLATES[tone.value];
+    const captions = templates.map(tpl => tpl.replaceAll('{produk}', p).replaceAll('{manfaat}', m));
+    result.style.display = 'block';
+    result.innerHTML = captions.map((c,i)=>`<div class="captionCard">${c}<br><button class="btn secondary small copy-btn" data-idx="${i}">Salin</button></div>`).join('');
+    result.querySelectorAll('.copy-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        navigator.clipboard.writeText(captions[Number(btn.dataset.idx)]).then(()=>{
+          btn.textContent = 'Tersalin!';
+          setTimeout(()=>btn.textContent='Salin', 1500);
+        });
+      });
+    });
+  });
+}
+
+/* ================= Generator Invoice ================= */
+function genInvoiceHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="iv-biz">Nama bisnismu</label><input type="text" id="iv-biz" placeholder="Toko Makmur Jaya"></div>
+      <div class="field"><label for="iv-num">No. invoice</label><input type="text" id="iv-num" placeholder="INV-001"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="iv-client">Nama klien</label><input type="text" id="iv-client" placeholder="Ibu Sari"></div>
+      <div class="field"><label for="iv-date">Tanggal</label><input type="text" id="iv-date" placeholder="25 Agustus 2026"></div>
+    </div>
+    <div class="field">
+      <label>Item</label>
+      <div id="iv-items"></div>
+      <button class="btn secondary small" id="iv-add">+ Tambah Item</button>
+    </div>
+    <div class="field">
+      <label for="iv-note">Catatan (opsional)</label>
+      <textarea id="iv-note" placeholder="Terima kasih sudah berbelanja!"></textarea>
+    </div>
+    <button class="btn" id="iv-make">Download Invoice PDF</button>
+    <div class="result" id="iv-result" style="display:none;"></div>
+  `);
+}
+function initGenInvoice(){
+  const itemsBox = document.getElementById('iv-items');
+  const addBtn = document.getElementById('iv-add');
+  const makeBtn = document.getElementById('iv-make');
+  const result = document.getElementById('iv-result');
+
+  function addRow(desc='', qty=1, price=''){
+    const row = document.createElement('div');
+    row.className = 'itemrow';
+    row.innerHTML = `
+      <input type="text" class="desc" placeholder="Deskripsi item" value="${desc}">
+      <input type="number" class="qty" placeholder="Qty" value="${qty}" min="1">
+      <input type="number" class="price" placeholder="Harga satuan" value="${price}">
+      <button class="remove-x" title="Hapus">&times;</button>`;
+    row.querySelector('.remove-x').addEventListener('click', ()=>row.remove());
+    itemsBox.appendChild(row);
+  }
+  addRow('Contoh produk', 1, 50000);
+  addBtn.addEventListener('click', ()=>addRow());
+
+  makeBtn.addEventListener('click', ()=>{
+    const biz = document.getElementById('iv-biz').value || 'Bisnis Kamu';
+    const num = document.getElementById('iv-num').value || 'INV-001';
+    const client = document.getElementById('iv-client').value || '-';
+    const date = document.getElementById('iv-date').value || '-';
+    const note = document.getElementById('iv-note').value || '';
+    const rows = Array.from(itemsBox.querySelectorAll('.itemrow')).map(r=>({
+      desc: r.querySelector('.desc').value || '-',
+      qty: Number(r.querySelector('.qty').value)||0,
+      price: Number(r.querySelector('.price').value)||0
+    }));
+    const total = rows.reduce((sum,r)=>sum + r.qty*r.price, 0);
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({unit:'pt', format:'a4'});
+    let y = 60;
+    doc.setFont('helvetica','bold'); doc.setFontSize(20);
+    doc.text(biz, 40, y);
+    doc.setFont('helvetica','normal'); doc.setFontSize(11);
+    y += 26;
+    doc.text(`Invoice: ${num}`, 40, y);
+    doc.text(`Tanggal: ${date}`, 400, y);
+    y += 16;
+    doc.text(`Untuk: ${client}`, 40, y);
+    y += 30;
+    doc.setDrawColor(200);
+    doc.line(40, y, 555, y);
+    y += 20;
+    doc.setFont('helvetica','bold');
+    doc.text('Deskripsi', 40, y);
+    doc.text('Qty', 340, y);
+    doc.text('Harga', 400, y);
+    doc.text('Subtotal', 480, y);
+    doc.setFont('helvetica','normal');
+    y += 10;
+    doc.line(40, y, 555, y);
+    y += 20;
+    rows.forEach(r=>{
+      doc.text(String(r.desc), 40, y);
+      doc.text(String(r.qty), 340, y);
+      doc.text(fmtRupiah(r.price), 400, y);
+      doc.text(fmtRupiah(r.qty*r.price), 480, y);
+      y += 20;
+    });
+    y += 6;
+    doc.line(40, y, 555, y);
+    y += 24;
+    doc.setFont('helvetica','bold'); doc.setFontSize(13);
+    doc.text(`Total: ${fmtRupiah(total)}`, 400, y);
+    if(note){
+      y += 40;
+      doc.setFont('helvetica','normal'); doc.setFontSize(10);
+      doc.text('Catatan:', 40, y);
+      doc.text(note, 40, y+14, {maxWidth:500});
+    }
+    doc.save(`${num}.pdf`);
+    result.style.display = 'block';
+    result.innerHTML = `<p>Invoice ${num} berhasil dibuat, total ${fmtRupiah(total)}. Cek folder unduhanmu.</p>`;
+  });
+}
+
+/* ================= Angka ke Terbilang (dipakai juga di Kwitansi) ================= */
+const SATUAN = ['','satu','dua','tiga','empat','lima','enam','tujuh','delapan','sembilan','sepuluh','sebelas'];
+function terbilang(n){
+  n = Math.floor(Math.abs(n));
+  if(n < 12) return SATUAN[n];
+  if(n < 20) return terbilang(n-10) + ' belas';
+  if(n < 100) return terbilang(Math.floor(n/10)) + ' puluh ' + terbilang(n%10);
+  if(n < 200) return 'seratus ' + terbilang(n-100);
+  if(n < 1000) return terbilang(Math.floor(n/100)) + ' ratus ' + terbilang(n%100);
+  if(n < 2000) return 'seribu ' + terbilang(n-1000);
+  if(n < 1000000) return terbilang(Math.floor(n/1000)) + ' ribu ' + terbilang(n%1000);
+  if(n < 1000000000) return terbilang(Math.floor(n/1000000)) + ' juta ' + terbilang(n%1000000);
+  if(n < 1000000000000) return terbilang(Math.floor(n/1000000000)) + ' miliar ' + terbilang(n%1000000000);
+  return terbilang(Math.floor(n/1000000000000)) + ' triliun ' + terbilang(n%1000000000000);
+}
+function terbilangClean(n){
+  return terbilang(n).replace(/\s+/g,' ').trim().replace(/^./, c=>c.toUpperCase());
+}
+
+/* ================= Gabung PDF ================= */
+function mergePdfHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="mp-files">Pilih beberapa file PDF</label>
+      <input type="file" id="mp-files" accept="application/pdf" multiple>
+      <p class="hint">Urutan file dipilih = urutan penggabungan.</p>
+    </div>
+    <ul id="mp-list" class="mono" style="font-size:0.85rem; padding-left:20px;"></ul>
+    <button class="btn" id="mp-make" disabled>Gabung & Download</button>
+    <div class="result" id="mp-result" style="display:none;"></div>
+  `);
+}
+function initMergePdf(){
+  const input = document.getElementById('mp-files');
+  const list = document.getElementById('mp-list');
+  const makeBtn = document.getElementById('mp-make');
+  const result = document.getElementById('mp-result');
+  let files = [];
+  input.addEventListener('change', e=>{
+    files = Array.from(e.target.files);
+    list.innerHTML = files.map(f=>`<li>${f.name}</li>`).join('');
+    makeBtn.disabled = files.length < 2;
+  });
+  makeBtn.addEventListener('click', async ()=>{
+    makeBtn.disabled = true; makeBtn.textContent = 'Menggabung...';
+    const merged = await PDFLib.PDFDocument.create();
+    for(const f of files){
+      const bytes = await f.arrayBuffer();
+      const src = await PDFLib.PDFDocument.load(bytes);
+      const pages = await merged.copyPages(src, src.getPageIndices());
+      pages.forEach(p=>merged.addPage(p));
+    }
+    const bytes = await merged.save();
+    const blob = new Blob([bytes], {type:'application/pdf'});
+    const url = URL.createObjectURL(blob);
+    result.style.display = 'block';
+    result.innerHTML = `<p>${files.length} file berhasil digabung.</p><a class="btn" href="${url}" download="toolkita-gabungan.pdf">Download PDF</a>`;
+    makeBtn.disabled = false; makeBtn.textContent = 'Gabung & Download';
+  });
+}
+
+/* ================= Putar PDF ================= */
+function rotatePdfHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="rp-file">Pilih file PDF</label>
+      <input type="file" id="rp-file" accept="application/pdf">
+    </div>
+    <div class="field">
+      <label for="rp-angle">Putar sebesar</label>
+      <select id="rp-angle">
+        <option value="90">90° searah jarum jam</option>
+        <option value="180">180°</option>
+        <option value="270">90° berlawanan jarum jam</option>
+      </select>
+    </div>
+    <button class="btn" id="rp-make" disabled>Putar & Download</button>
+    <div class="result" id="rp-result" style="display:none;"></div>
+  `);
+}
+function initRotatePdf(){
+  const input = document.getElementById('rp-file');
+  const angle = document.getElementById('rp-angle');
+  const makeBtn = document.getElementById('rp-make');
+  const result = document.getElementById('rp-result');
+  let file = null;
+  input.addEventListener('change', e=>{ file = e.target.files[0]; makeBtn.disabled = !file; });
+  makeBtn.addEventListener('click', async ()=>{
+    if(!file) return;
+    makeBtn.disabled = true; makeBtn.textContent = 'Memproses...';
+    const bytes = await file.arrayBuffer();
+    const doc = await PDFLib.PDFDocument.load(bytes);
+    const add = Number(angle.value);
+    doc.getPages().forEach(p=>{
+      const current = p.getRotation().angle;
+      p.setRotation(PDFLib.degrees((current + add) % 360));
+    });
+    const out = await doc.save();
+    const blob = new Blob([out], {type:'application/pdf'});
+    const url = URL.createObjectURL(blob);
+    result.style.display = 'block';
+    result.innerHTML = `<p>PDF berhasil diputar.</p><a class="btn" href="${url}" download="toolkita-putar.pdf">Download PDF</a>`;
+    makeBtn.disabled = false; makeBtn.textContent = 'Putar & Download';
+  });
+}
+
+/* ================= PDF ke Teks ================= */
+function pdfToTextHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="pt-file">Pilih file PDF</label>
+      <input type="file" id="pt-file" accept="application/pdf">
+    </div>
+    <div class="result" id="pt-result" style="display:none;">
+      <textarea id="pt-output" rows="12" readonly></textarea>
+      <button class="btn small" id="pt-download" style="margin-top:12px;">Download .txt</button>
+      <button class="btn secondary small" id="pt-copy" style="margin-top:12px;">Salin Teks</button>
+    </div>
+  `);
+}
+function initPdfToText(){
+  const input = document.getElementById('pt-file');
+  const result = document.getElementById('pt-result');
+  const output = document.getElementById('pt-output');
+  const dlBtn = document.getElementById('pt-download');
+  const copyBtn = document.getElementById('pt-copy');
+  input.addEventListener('change', async e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    result.style.display = 'block';
+    output.value = 'Mengambil teks...';
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+    let text = '';
+    for(let i=1;i<=pdf.numPages;i++){
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(it=>it.str).join(' ') + '\n\n';
+    }
+    output.value = text.trim();
+  });
+  dlBtn.addEventListener('click', ()=>{
+    const blob = new Blob([output.value], {type:'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'toolkita-teks.txt'; a.click();
+  });
+  copyBtn.addEventListener('click', ()=>{
+    navigator.clipboard.writeText(output.value);
+    copyBtn.textContent = 'Tersalin!';
+    setTimeout(()=>copyBtn.textContent='Salin Teks', 1500);
+  });
+}
+/* ===== CHUNK_A_END ===== */
+
+/* ================= Generic image format converter (JPG<->PNG) ================= */
+function formatConvertHTML(t, targetMime, targetExt, fillWhite){
+  return toolShell(t, `
+    <div class="field">
+      <label for="fc-file">Pilih gambar</label>
+      <input type="file" id="fc-file" accept="image/*">
+    </div>
+    <div class="result" id="fc-result" style="display:none;">
+      <img id="fc-preview" style="max-width:260px; border:1px solid var(--line); border-radius:8px;">
+      <br><a class="btn" id="fc-download" style="margin-top:16px;" download="toolkita-convert.${targetExt}">Download Gambar</a>
+    </div>
+  `);
+}
+function initFormatConvert(targetMime, targetExt, fillWhite){
+  const fileInput = document.getElementById('fc-file');
+  const result = document.getElementById('fc-result');
+  const preview = document.getElementById('fc-preview');
+  const dlBtn = document.getElementById('fc-download');
+  fileInput.addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width; canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if(fillWhite){ ctx.fillStyle = '#fff'; ctx.fillRect(0,0,canvas.width,canvas.height); }
+        ctx.drawImage(img,0,0);
+        const dataUrl = canvas.toDataURL(targetMime, 0.92);
+        preview.src = dataUrl;
+        dlBtn.href = dataUrl;
+        dlBtn.download = `toolkita-convert.${targetExt}`;
+        result.style.display = 'block';
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ================= Crop Gambar ================= */
+function cropImgHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="cr-file">Pilih gambar</label>
+      <input type="file" id="cr-file" accept="image/*">
+    </div>
+    <div class="row">
+      <div class="field"><label for="cr-x">Posisi X</label><input type="number" id="cr-x" value="0" min="0"></div>
+      <div class="field"><label for="cr-y">Posisi Y</label><input type="number" id="cr-y" value="0" min="0"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="cr-w">Lebar crop</label><input type="number" id="cr-w" min="1"></div>
+      <div class="field"><label for="cr-h">Tinggi crop</label><input type="number" id="cr-h" min="1"></div>
+    </div>
+    <p class="hint" id="cr-hint"></p>
+    <div class="result" id="cr-result" style="display:none;">
+      <img id="cr-preview" style="max-width:260px; border:1px solid var(--line); border-radius:8px;">
+      <br><a class="btn" id="cr-download" style="margin-top:16px;" download="toolkita-crop.jpg">Download Hasil Crop</a>
+    </div>
+  `);
+}
+function initCropImg(){
+  const fileInput = document.getElementById('cr-file');
+  const xI=document.getElementById('cr-x'), yI=document.getElementById('cr-y'), wI=document.getElementById('cr-w'), hI=document.getElementById('cr-h');
+  const hint = document.getElementById('cr-hint');
+  const result = document.getElementById('cr-result');
+  const preview = document.getElementById('cr-preview');
+  const dlBtn = document.getElementById('cr-download');
+  let img = null;
+  fileInput.addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      img = new Image();
+      img.onload = ()=>{
+        hint.textContent = `Ukuran asli: ${img.width} x ${img.height}px`;
+        wI.value = img.width; hI.value = img.height;
+        doCrop();
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  function doCrop(){
+    if(!img) return;
+    const x = Number(xI.value)||0, y = Number(yI.value)||0;
+    const w = Math.min(Number(wI.value)||1, img.width-x);
+    const h = Math.min(Number(hI.value)||1, img.height-y);
+    if(w<=0 || h<=0) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, x, y, w, h, 0, 0, w, h);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    preview.src = dataUrl;
+    dlBtn.href = dataUrl;
+    result.style.display = 'block';
+  }
+  [xI,yI,wI,hI].forEach(el=>el.addEventListener('input', doCrop));
+}
+
+/* ================= Putar & Balik Gambar ================= */
+function rotateImgHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="rt-file">Pilih gambar</label>
+      <input type="file" id="rt-file" accept="image/*">
+    </div>
+    <div class="row">
+      <button class="btn secondary small" id="rt-rotate">Putar 90°</button>
+      <button class="btn secondary small" id="rt-fliph">Balik Horizontal</button>
+      <button class="btn secondary small" id="rt-flipv">Balik Vertikal</button>
+    </div>
+    <div class="result" id="rt-result" style="display:none; margin-top:16px;">
+      <img id="rt-preview" style="max-width:260px; border:1px solid var(--line); border-radius:8px;">
+      <br><a class="btn" id="rt-download" style="margin-top:16px;" download="toolkita-putar.jpg">Download Gambar</a>
+    </div>
+  `);
+}
+function initRotateImg(){
+  const fileInput = document.getElementById('rt-file');
+  const preview = document.getElementById('rt-preview');
+  const result = document.getElementById('rt-result');
+  const dlBtn = document.getElementById('rt-download');
+  let img = null, rotation = 0, flipH = false, flipV = false;
+  function draw(){
+    if(!img) return;
+    const canvas = document.createElement('canvas');
+    const swap = rotation % 180 !== 0;
+    canvas.width = swap ? img.height : img.width;
+    canvas.height = swap ? img.width : img.height;
+    const ctx = canvas.getContext('2d');
+    ctx.translate(canvas.width/2, canvas.height/2);
+    ctx.rotate(rotation * Math.PI/180);
+    ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
+    ctx.drawImage(img, -img.width/2, -img.height/2);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    preview.src = dataUrl;
+    dlBtn.href = dataUrl;
+    result.style.display = 'block';
+  }
+  fileInput.addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    rotation = 0; flipH = false; flipV = false;
+    const reader = new FileReader();
+    reader.onload = ()=>{ img = new Image(); img.onload = draw; img.src = reader.result; };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('rt-rotate').addEventListener('click', ()=>{ rotation = (rotation+90)%360; draw(); });
+  document.getElementById('rt-fliph').addEventListener('click', ()=>{ flipH = !flipH; draw(); });
+  document.getElementById('rt-flipv').addEventListener('click', ()=>{ flipV = !flipV; draw(); });
+}
+
+/* ================= Watermark Gambar ================= */
+function watermarkImgHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="wm-file">Pilih gambar</label>
+      <input type="file" id="wm-file" accept="image/*">
+    </div>
+    <div class="row">
+      <div class="field"><label for="wm-text">Teks watermark</label><input type="text" id="wm-text" value="© Toolkita" placeholder="© Namamu"></div>
+      <div class="field"><label for="wm-size">Ukuran font</label><input type="number" id="wm-size" value="28" min="8"></div>
+    </div>
+    <div class="field">
+      <label for="wm-opacity">Transparansi: <span id="wm-oval">60</span>%</label>
+      <input type="range" id="wm-opacity" min="10" max="100" value="60">
+    </div>
+    <div class="result" id="wm-result" style="display:none;">
+      <img id="wm-preview" style="max-width:320px; border:1px solid var(--line); border-radius:8px;">
+      <br><a class="btn" id="wm-download" style="margin-top:16px;" download="toolkita-watermark.jpg">Download Gambar</a>
+    </div>
+  `);
+}
+function initWatermarkImg(){
+  const fileInput = document.getElementById('wm-file');
+  const textInput = document.getElementById('wm-text');
+  const sizeInput = document.getElementById('wm-size');
+  const opacity = document.getElementById('wm-opacity');
+  const oval = document.getElementById('wm-oval');
+  const preview = document.getElementById('wm-preview');
+  const result = document.getElementById('wm-result');
+  const dlBtn = document.getElementById('wm-download');
+  let img = null;
+  function draw(){
+    if(!img) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width; canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img,0,0);
+    ctx.globalAlpha = Number(opacity.value)/100;
+    ctx.fillStyle = '#fff';
+    ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+    ctx.lineWidth = 2;
+    const size = Number(sizeInput.value)||28;
+    ctx.font = `bold ${size}px sans-serif`;
+    ctx.textBaseline = 'bottom';
+    const text = textInput.value || '© Toolkita';
+    const metrics = ctx.measureText(text);
+    const x = img.width - metrics.width - 20;
+    const y = img.height - 20;
+    ctx.strokeText(text, x, y);
+    ctx.fillText(text, x, y);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    preview.src = dataUrl;
+    dlBtn.href = dataUrl;
+    result.style.display = 'block';
+  }
+  fileInput.addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{ img = new Image(); img.onload = draw; img.src = reader.result; };
+    reader.readAsDataURL(file);
+  });
+  [textInput,sizeInput].forEach(el=>el.addEventListener('input', draw));
+  opacity.addEventListener('input', ()=>{ oval.textContent = opacity.value; draw(); });
+}
+
+/* ================= Gambar Hitam Putih ================= */
+function grayscaleImgHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="gs-file">Pilih gambar</label>
+      <input type="file" id="gs-file" accept="image/*">
+    </div>
+    <div class="result" id="gs-result" style="display:none;">
+      <img id="gs-preview" style="max-width:280px; border:1px solid var(--line); border-radius:8px;">
+      <br><a class="btn" id="gs-download" style="margin-top:16px;" download="toolkita-grayscale.jpg">Download Gambar</a>
+    </div>
+  `);
+}
+function initGrayscaleImg(){
+  const fileInput = document.getElementById('gs-file');
+  const preview = document.getElementById('gs-preview');
+  const result = document.getElementById('gs-result');
+  const dlBtn = document.getElementById('gs-download');
+  fileInput.addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width; canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img,0,0);
+        const data = ctx.getImageData(0,0,canvas.width,canvas.height);
+        for(let i=0;i<data.data.length;i+=4){
+          const gray = data.data[i]*0.299 + data.data[i+1]*0.587 + data.data[i+2]*0.114;
+          data.data[i]=data.data[i+1]=data.data[i+2]=gray;
+        }
+        ctx.putImageData(data,0,0);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+        preview.src = dataUrl;
+        dlBtn.href = dataUrl;
+        result.style.display = 'block';
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ================= Gambar ke Base64 ================= */
+function imgToBase64HTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="b64-file">Pilih gambar</label>
+      <input type="file" id="b64-file" accept="image/*">
+    </div>
+    <div class="result" id="b64-result" style="display:none;">
+      <div class="stat-row"><div class="stat"><span class="num" id="b64-size">-</span><span class="lbl">Ukuran teks base64</span></div></div>
+      <textarea id="b64-output" rows="8" readonly style="margin-top:12px;"></textarea>
+      <button class="btn small" id="b64-copy" style="margin-top:12px;">Salin Base64</button>
+    </div>
+  `);
+}
+function initImgToBase64(){
+  const fileInput = document.getElementById('b64-file');
+  const result = document.getElementById('b64-result');
+  const output = document.getElementById('b64-output');
+  const sizeStat = document.getElementById('b64-size');
+  const copyBtn = document.getElementById('b64-copy');
+  fileInput.addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      output.value = reader.result;
+      sizeStat.textContent = fmtBytes(reader.result.length);
+      result.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  });
+  copyBtn.addEventListener('click', ()=>{
+    navigator.clipboard.writeText(output.value);
+    copyBtn.textContent = 'Tersalin!';
+    setTimeout(()=>copyBtn.textContent='Salin Base64', 1500);
+  });
+}
+/* ===== CHUNK_B_END ===== */
+
+/* ================= Kalkulator BEP ================= */
+function calcBepHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="bp-fixed">Biaya tetap per bulan</label><input type="number" id="bp-fixed" placeholder="misal 3000000"></div>
+      <div class="field"><label for="bp-price">Harga jual per unit</label><input type="number" id="bp-price" placeholder="misal 25000"></div>
+      <div class="field"><label for="bp-var">Biaya variabel per unit</label><input type="number" id="bp-var" placeholder="misal 15000"></div>
+    </div>
+    <div class="result">
+      <div class="stat-row">
+        <div class="stat"><span class="num" id="bp-unit">0</span><span class="lbl">BEP (unit)</span></div>
+        <div class="stat"><span class="num" id="bp-rupiah">Rp0</span><span class="lbl">BEP (rupiah)</span></div>
+      </div>
+    </div>
+  `);
+}
+function initCalcBep(){
+  const fixed=document.getElementById('bp-fixed'), price=document.getElementById('bp-price'), varc=document.getElementById('bp-var');
+  const unitOut=document.getElementById('bp-unit'), rpOut=document.getElementById('bp-rupiah');
+  function calc(){
+    const f=Number(fixed.value)||0, p=Number(price.value)||0, v=Number(varc.value)||0;
+    const margin = p - v;
+    if(margin<=0){ unitOut.textContent='—'; rpOut.textContent='Harga jual harus lebih besar dari biaya variabel'; return; }
+    const units = f/margin;
+    unitOut.textContent = Math.ceil(units).toLocaleString('id-ID');
+    rpOut.textContent = fmtRupiah(units*p);
+  }
+  [fixed,price,varc].forEach(el=>el.addEventListener('input', calc));
+}
+
+/* ================= Kalkulator Cicilan ================= */
+function calcCicilanHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="cc-pokok">Jumlah pinjaman</label><input type="number" id="cc-pokok" placeholder="misal 10000000"></div>
+      <div class="field"><label for="cc-bunga">Bunga per tahun (%)</label><input type="number" id="cc-bunga" placeholder="misal 12"></div>
+      <div class="field"><label for="cc-tenor">Tenor (bulan)</label><input type="number" id="cc-tenor" placeholder="misal 12"></div>
+    </div>
+    <p class="hint">Pakai skema bunga flat/tetap, cara paling umum dipakai leasing & multifinance.</p>
+    <div class="result">
+      <div class="stat-row">
+        <div class="stat"><span class="num" id="cc-perbulan">Rp0</span><span class="lbl">Cicilan per bulan</span></div>
+        <div class="stat"><span class="num" id="cc-total">Rp0</span><span class="lbl">Total yang dibayar</span></div>
+        <div class="stat"><span class="num" id="cc-bunga-total">Rp0</span><span class="lbl">Total bunga</span></div>
+      </div>
+    </div>
+  `);
+}
+function initCalcCicilan(){
+  const pokok=document.getElementById('cc-pokok'), bunga=document.getElementById('cc-bunga'), tenor=document.getElementById('cc-tenor');
+  const perbulan=document.getElementById('cc-perbulan'), total=document.getElementById('cc-total'), bungaTotal=document.getElementById('cc-bunga-total');
+  function calc(){
+    const p=Number(pokok.value)||0, b=Number(bunga.value)||0, n=Number(tenor.value)||0;
+    if(n<=0){ perbulan.textContent='Rp0'; total.textContent='Rp0'; bungaTotal.textContent='Rp0'; return; }
+    const totalBunga = p * (b/100) * (n/12);
+    const totalBayar = p + totalBunga;
+    perbulan.textContent = fmtRupiah(totalBayar/n);
+    total.textContent = fmtRupiah(totalBayar);
+    bungaTotal.textContent = fmtRupiah(totalBunga);
+  }
+  [pokok,bunga,tenor].forEach(el=>el.addEventListener('input', calc));
+}
+
+/* ================= Kalkulator Diskon ================= */
+function calcDiskonHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="dk-harga">Harga awal</label><input type="number" id="dk-harga" placeholder="misal 150000"></div>
+      <div class="field"><label for="dk-d1">Diskon pertama (%)</label><input type="number" id="dk-d1" placeholder="misal 20"></div>
+      <div class="field"><label for="dk-d2">Diskon tambahan (%, opsional)</label><input type="number" id="dk-d2" placeholder="misal 10"></div>
+    </div>
+    <div class="result">
+      <div class="stat-row">
+        <div class="stat"><span class="num" id="dk-akhir">Rp0</span><span class="lbl">Harga akhir</span></div>
+        <div class="stat"><span class="num" id="dk-hemat">Rp0</span><span class="lbl">Total hemat</span></div>
+      </div>
+    </div>
+  `);
+}
+function initCalcDiskon(){
+  const harga=document.getElementById('dk-harga'), d1=document.getElementById('dk-d1'), d2=document.getElementById('dk-d2');
+  const akhir=document.getElementById('dk-akhir'), hemat=document.getElementById('dk-hemat');
+  function calc(){
+    const h=Number(harga.value)||0;
+    let sisa = h * (1-(Number(d1.value)||0)/100);
+    sisa = sisa * (1-(Number(d2.value)||0)/100);
+    akhir.textContent = fmtRupiah(sisa);
+    hemat.textContent = fmtRupiah(h-sisa);
+  }
+  [harga,d1,d2].forEach(el=>el.addEventListener('input', calc));
+}
+
+/* ================= Kalkulator PPN ================= */
+function calcPpnHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="pp-harga">Nominal harga</label><input type="number" id="pp-harga" placeholder="misal 500000"></div>
+      <div class="field"><label for="pp-rate">Tarif PPN (%)</label><input type="number" id="pp-rate" value="11"></div>
+    </div>
+    <div class="field">
+      <label><input type="radio" name="pp-mode" value="exclusive" checked style="width:auto;"> Harga belum termasuk PPN</label><br>
+      <label><input type="radio" name="pp-mode" value="inclusive" style="width:auto;"> Harga sudah termasuk PPN</label>
+    </div>
+    <div class="result">
+      <div class="stat-row">
+        <div class="stat"><span class="num" id="pp-dpp">Rp0</span><span class="lbl">Harga sebelum pajak (DPP)</span></div>
+        <div class="stat"><span class="num" id="pp-nilai">Rp0</span><span class="lbl">Nilai PPN</span></div>
+        <div class="stat"><span class="num" id="pp-total">Rp0</span><span class="lbl">Total harga</span></div>
+      </div>
+    </div>
+  `);
+}
+function initCalcPpn(){
+  const harga=document.getElementById('pp-harga'), rate=document.getElementById('pp-rate');
+  const dpp=document.getElementById('pp-dpp'), nilai=document.getElementById('pp-nilai'), total=document.getElementById('pp-total');
+  function calc(){
+    const h=Number(harga.value)||0, r=Number(rate.value)||0;
+    const mode = document.querySelector('input[name="pp-mode"]:checked').value;
+    let dppVal, ppnVal, totalVal;
+    if(mode==='exclusive'){ dppVal=h; ppnVal=h*r/100; totalVal=h+ppnVal; }
+    else { totalVal=h; dppVal=h/(1+r/100); ppnVal=totalVal-dppVal; }
+    dpp.textContent = fmtRupiah(dppVal);
+    nilai.textContent = fmtRupiah(ppnVal);
+    total.textContent = fmtRupiah(totalVal);
+  }
+  [harga,rate].forEach(el=>el.addEventListener('input', calc));
+  document.querySelectorAll('input[name="pp-mode"]').forEach(el=>el.addEventListener('change', calc));
+}
+
+/* ================= Kalkulator ROI ================= */
+function calcRoiHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="roi-modal">Modal awal</label><input type="number" id="roi-modal" placeholder="misal 5000000"></div>
+      <div class="field"><label for="roi-hasil">Hasil akhir / nilai sekarang</label><input type="number" id="roi-hasil" placeholder="misal 6500000"></div>
+    </div>
+    <div class="result">
+      <div class="stat-row">
+        <div class="stat"><span class="num" id="roi-untung">Rp0</span><span class="lbl">Untung/rugi</span></div>
+        <div class="stat"><span class="num" id="roi-persen">0%</span><span class="lbl">ROI</span></div>
+      </div>
+    </div>
+  `);
+}
+function initCalcRoi(){
+  const modal=document.getElementById('roi-modal'), hasil=document.getElementById('roi-hasil');
+  const untung=document.getElementById('roi-untung'), persen=document.getElementById('roi-persen');
+  function calc(){
+    const m=Number(modal.value)||0, h=Number(hasil.value)||0;
+    untung.textContent = fmtRupiah(h-m);
+    persen.textContent = m>0 ? (((h-m)/m)*100).toFixed(1)+'%' : '0%';
+  }
+  [modal,hasil].forEach(el=>el.addEventListener('input', calc));
+}
+
+/* ================= Kalkulator Zakat Penghasilan ================= */
+function calcZakatHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="zk-income">Penghasilan per bulan</label><input type="number" id="zk-income" placeholder="misal 8000000"></div>
+      <div class="field"><label for="zk-gold">Harga emas per gram (isi sesuai harga hari ini)</label><input type="number" id="zk-gold" placeholder="misal 1500000"></div>
+    </div>
+    <p class="hint">Nisab dihitung setara 85 gram emas. Zakat profesi umumnya 2.5% dari penghasilan bila sudah mencapai nisab.</p>
+    <div class="result">
+      <div class="stat-row">
+        <div class="stat"><span class="num" id="zk-nisab">Rp0</span><span class="lbl">Nisab (85gr emas)</span></div>
+        <div class="stat"><span class="num" id="zk-wajib">-</span><span class="lbl">Status</span></div>
+        <div class="stat"><span class="num" id="zk-zakat">Rp0</span><span class="lbl">Zakat per bulan</span></div>
+      </div>
+    </div>
+  `);
+}
+function initCalcZakat(){
+  const income=document.getElementById('zk-income'), gold=document.getElementById('zk-gold');
+  const nisab=document.getElementById('zk-nisab'), wajib=document.getElementById('zk-wajib'), zakat=document.getElementById('zk-zakat');
+  function calc(){
+    const i=Number(income.value)||0, g=Number(gold.value)||0;
+    const nisabVal = g*85;
+    nisab.textContent = fmtRupiah(nisabVal);
+    if(nisabVal>0 && i*12 >= nisabVal){
+      wajib.textContent = 'Wajib zakat';
+      zakat.textContent = fmtRupiah(i*0.025);
+    } else {
+      wajib.textContent = 'Belum wajib';
+      zakat.textContent = 'Rp0';
+    }
+  }
+  [income,gold].forEach(el=>el.addEventListener('input', calc));
+}
+
+/* ================= Kalkulator Lembur ================= */
+function calcLemburHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="lb-gaji">Gaji per bulan</label><input type="number" id="lb-gaji" placeholder="misal 4500000"></div>
+      <div class="field"><label for="lb-jam">Jumlah jam lembur</label><input type="number" id="lb-jam" placeholder="misal 3"></div>
+    </div>
+    <p class="hint">Pakai rumus Kepmenaker: upah per jam = gaji ÷ 173. Jam pertama dikali 1.5, jam berikutnya dikali 2.</p>
+    <div class="result">
+      <div class="stat-row">
+        <div class="stat"><span class="num" id="lb-perjam">Rp0</span><span class="lbl">Upah per jam</span></div>
+        <div class="stat"><span class="num" id="lb-total">Rp0</span><span class="lbl">Total upah lembur</span></div>
+      </div>
+    </div>
+  `);
+}
+function initCalcLembur(){
+  const gaji=document.getElementById('lb-gaji'), jam=document.getElementById('lb-jam');
+  const perjam=document.getElementById('lb-perjam'), total=document.getElementById('lb-total');
+  function calc(){
+    const g=Number(gaji.value)||0, j=Number(jam.value)||0;
+    const hourly = g/173;
+    perjam.textContent = fmtRupiah(hourly);
+    let totalLembur = 0;
+    if(j>0){ totalLembur += hourly*1.5; }
+    if(j>1){ totalLembur += hourly*2*(j-1); }
+    total.textContent = fmtRupiah(totalLembur);
+  }
+  [gaji,jam].forEach(el=>el.addEventListener('input', calc));
+}
+/* ===== CHUNK_C_END ===== */
+
+/* ================= Generator Hashtag ================= */
+const HASHTAG_GENERIC = ['UMKM','JualanOnline','ProdukLokal','SupportLocalBusiness','BisnisKita','UsahaKecil','OnlineShop','PromoHariIni'];
+function genHashtagHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="ht-keyword">Kata kunci (pisahkan dengan koma)</label>
+      <input type="text" id="ht-keyword" placeholder="misal 'kopi, minuman kekinian'">
+    </div>
+    <button class="btn" id="ht-make">Bikin Hashtag</button>
+    <div class="result" id="ht-result" style="display:none;"></div>
+  `);
+}
+function initGenHashtag(){
+  const keyword = document.getElementById('ht-keyword');
+  const makeBtn = document.getElementById('ht-make');
+  const result = document.getElementById('ht-result');
+  makeBtn.addEventListener('click', ()=>{
+    const words = keyword.value.split(',').map(w=>w.trim()).filter(Boolean);
+    if(!words.length){ words.push('usahakita'); }
+    const tags = new Set();
+    words.forEach(w=>{
+      const clean = w.replace(/\s+/g,'');
+      tags.add('#'+clean);
+      tags.add('#'+clean+'indonesia');
+      tags.add('#jual'+clean);
+    });
+    HASHTAG_GENERIC.forEach(h=>tags.add('#'+h));
+    const list = [...tags].join(' ');
+    result.style.display = 'block';
+    result.innerHTML = `<div class="captionCard">${list}</div><button class="btn secondary small copy-btn" id="ht-copy">Salin Semua</button>`;
+    document.getElementById('ht-copy').addEventListener('click', ()=>{
+      navigator.clipboard.writeText(list);
+      const b = document.getElementById('ht-copy');
+      b.textContent = 'Tersalin!'; setTimeout(()=>b.textContent='Salin Semua',1500);
+    });
+  });
+}
+
+/* ================= Generator Bio Instagram ================= */
+function genBioHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="bio-nama">Nama / brand</label><input type="text" id="bio-nama" placeholder="misal 'Kopi Senja'"></div>
+      <div class="field"><label for="bio-niche">Niche / jualan apa</label><input type="text" id="bio-niche" placeholder="misal 'kopi kekinian'"></div>
+      <div class="field"><label for="bio-kontak">Kontak (opsional)</label><input type="text" id="bio-kontak" placeholder="misal '0812-xxxx atau link WA'"></div>
+    </div>
+    <button class="btn" id="bio-make">Bikin Bio</button>
+    <div class="result" id="bio-result" style="display:none;"></div>
+  `);
+}
+function initGenBio(){
+  const nama=document.getElementById('bio-nama'), niche=document.getElementById('bio-niche'), kontak=document.getElementById('bio-kontak');
+  const makeBtn=document.getElementById('bio-make'), result=document.getElementById('bio-result');
+  makeBtn.addEventListener('click', ()=>{
+    const n = nama.value.trim()||'Brand Kamu', ni = niche.value.trim()||'produk favoritmu', k = kontak.value.trim();
+    const kontakLine = k ? `\n📩 Order: ${k}` : '';
+    const variants = [
+      `✨ ${n}\n${ni.charAt(0).toUpperCase()+ni.slice(1)} tiap hari, langsung dari kami ke kamu.${kontakLine}`,
+      `${n} 🏠\nSpesialis ${ni}. Kualitas oke, harga bersahabat.${kontakLine}`,
+      `${n}\n📍 Jualan ${ni} sejak hari ini jadi setiap hari\n👇 klik link di bawah${kontakLine}`
+    ];
+    result.style.display = 'block';
+    result.innerHTML = variants.map((c,i)=>`<div class="captionCard">${c}<br><button class="btn secondary small copy-btn" data-i="${i}">Salin</button></div>`).join('');
+    result.querySelectorAll('.copy-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        navigator.clipboard.writeText(variants[Number(btn.dataset.i)]);
+        btn.textContent='Tersalin!'; setTimeout(()=>btn.textContent='Salin',1500);
+      });
+    });
+  });
+}
+
+/* ================= Generator Ide Konten ================= */
+const CONTENT_TEMPLATES = [
+  'Tips seputar {topik} yang jarang orang tahu',
+  'Q&A: jawab pertanyaan follower soal {topik}',
+  'Before & after pakai {topik}',
+  'Behind the scenes proses bikin {topik}',
+  'Mitos vs fakta soal {topik}',
+  '3 kesalahan umum soal {topik}',
+  'Testimoni pelanggan tentang {topik}',
+  'Cerita di balik brand & {topik}',
+  'Perbandingan {topik} vs kompetitor (secara fair)',
+  'Konten edukasi singkat soal {topik} dalam 30 detik'
+];
+function genIdeKontenHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="ik-topik">Topik / niche</label>
+      <input type="text" id="ik-topik" placeholder="misal 'skincare', 'jasa desain'">
+    </div>
+    <button class="btn" id="ik-make">Bikin Ide Konten</button>
+    <div class="result" id="ik-result" style="display:none;"></div>
+  `);
+}
+function initGenIdeKonten(){
+  const topik = document.getElementById('ik-topik');
+  const makeBtn = document.getElementById('ik-make');
+  const result = document.getElementById('ik-result');
+  makeBtn.addEventListener('click', ()=>{
+    const tp = topik.value.trim() || 'produkmu';
+    const ideas = CONTENT_TEMPLATES.map(tpl=>tpl.replaceAll('{topik}', tp));
+    result.style.display = 'block';
+    result.innerHTML = `<ol>${ideas.map(i=>`<li style="margin-bottom:8px;">${i}</li>`).join('')}</ol>`;
+  });
+}
+
+/* ================= Generator Prompt AI ================= */
+const PROMPT_TEMPLATES = {
+  artikel: 'Tulis artikel tentang "{topik}" dengan gaya bahasa santai, target pembaca pemula, panjang sekitar 500 kata, sertakan sub-judul dan contoh nyata.',
+  gambar: 'Buat gambar bertema "{topik}", gaya ilustrasi digital, warna cerah, komposisi rapi, resolusi tinggi, tanpa teks di dalam gambar.',
+  coding: 'Bantu saya membuat kode untuk "{topik}". Jelaskan langkah-langkahnya, sertakan komentar di tiap bagian penting, dan berikan contoh penggunaannya.',
+  bisnis: 'Buatkan strategi bisnis singkat untuk "{topik}", mencakup target pasar, kelebihan dibanding kompetitor, dan 3 langkah awal yang bisa langsung dijalankan.',
+  belajar: 'Jelaskan konsep "{topik}" seolah saya pemula total, pakai analogi sehari-hari, lalu beri 3 contoh soal latihan sederhana.'
+};
+function genPromptAiHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="pa-topik">Topik</label><input type="text" id="pa-topik" placeholder="misal 'diet sehat', 'toko online'"></div>
+      <div class="field"><label for="pa-tujuan">Tujuan prompt</label>
+        <select id="pa-tujuan">
+          <option value="artikel">Menulis artikel</option>
+          <option value="gambar">Membuat gambar</option>
+          <option value="coding">Coding</option>
+          <option value="bisnis">Strategi bisnis</option>
+          <option value="belajar">Belajar konsep baru</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn" id="pa-make">Susun Prompt</button>
+    <div class="result" id="pa-result" style="display:none;"></div>
+  `);
+}
+function initGenPromptAi(){
+  const topik=document.getElementById('pa-topik'), tujuan=document.getElementById('pa-tujuan');
+  const makeBtn=document.getElementById('pa-make'), result=document.getElementById('pa-result');
+  makeBtn.addEventListener('click', ()=>{
+    const tp = topik.value.trim() || 'topik kamu';
+    const prompt = PROMPT_TEMPLATES[tujuan.value].replaceAll('{topik}', tp);
+    result.style.display = 'block';
+    result.innerHTML = `<div class="captionCard">${prompt}</div><button class="btn secondary small copy-btn" id="pa-copy">Salin Prompt</button>`;
+    document.getElementById('pa-copy').addEventListener('click', ()=>{
+      navigator.clipboard.writeText(prompt);
+      const b=document.getElementById('pa-copy'); b.textContent='Tersalin!'; setTimeout(()=>b.textContent='Salin Prompt',1500);
+    });
+  });
+}
+
+/* ================= Generator Ucapan ================= */
+const UCAPAN_TEMPLATES = {
+  ulangtahun: ['Selamat ulang tahun, {nama}! Semoga umur makin panjang, sehat terus, dan segala yang dicita-citakan tercapai 🎉','Happy birthday, {nama}! Semoga tahun ini lebih baik dari tahun kemarin ya 🎂'],
+  pernikahan: ['Selamat menempuh hidup baru, {nama}! Semoga menjadi keluarga yang sakinah, mawaddah, warahmah 💍','Selamat atas pernikahannya, {nama}! Semoga langgeng sampai kakek nenek ❤️'],
+  lebaran: ['Selamat Hari Raya Idul Fitri, {nama}. Mohon maaf lahir dan batin 🌙','Minal aidin wal faizin, {nama}! Semoga Ramadan meninggalkan bekas kebaikan di hati kita.'],
+  kelulusan: ['Selamat atas kelulusannya, {nama}! Ini baru awal dari perjalanan yang lebih besar 🎓','Congrats wisuda, {nama}! Kerja kerasnya nggak sia-sia.'],
+  dukacita: ['Turut berduka cita atas berpulangnya keluarga {nama}. Semoga diberi ketabahan dan kekuatan.','Innalillahi wa inna ilaihi rajiun. Turut berbelasungkawa, {nama}. Semoga almarhum/almarhumah tenang di sisi-Nya.']
+};
+function genUcapanHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="uc-jenis">Jenis ucapan</label>
+        <select id="uc-jenis">
+          <option value="ulangtahun">Ulang Tahun</option>
+          <option value="pernikahan">Pernikahan</option>
+          <option value="lebaran">Lebaran</option>
+          <option value="kelulusan">Kelulusan</option>
+          <option value="dukacita">Duka Cita</option>
+        </select>
+      </div>
+      <div class="field"><label for="uc-nama">Nama penerima</label><input type="text" id="uc-nama" placeholder="misal 'Budi'"></div>
+    </div>
+    <button class="btn" id="uc-make">Bikin Ucapan</button>
+    <div class="result" id="uc-result" style="display:none;"></div>
+  `);
+}
+function initGenUcapan(){
+  const jenis=document.getElementById('uc-jenis'), nama=document.getElementById('uc-nama');
+  const makeBtn=document.getElementById('uc-make'), result=document.getElementById('uc-result');
+  makeBtn.addEventListener('click', ()=>{
+    const n = nama.value.trim() || 'kamu';
+    const variants = UCAPAN_TEMPLATES[jenis.value].map(tpl=>tpl.replaceAll('{nama}', n));
+    result.style.display = 'block';
+    result.innerHTML = variants.map((c,i)=>`<div class="captionCard">${c}<br><button class="btn secondary small copy-btn" data-i="${i}">Salin</button></div>`).join('');
+    result.querySelectorAll('.copy-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        navigator.clipboard.writeText(variants[Number(btn.dataset.i)]);
+        btn.textContent='Tersalin!'; setTimeout(()=>btn.textContent='Salin',1500);
+      });
+    });
+  });
+}
+
+/* ================= Generator Password Aman ================= */
+function genPasswordHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="gp-length">Panjang password: <span id="gp-lval">14</span> karakter</label>
+      <input type="range" id="gp-length" min="6" max="32" value="14">
+    </div>
+    <div class="field">
+      <label><input type="checkbox" id="gp-upper" checked style="width:auto;"> Huruf besar (A-Z)</label><br>
+      <label><input type="checkbox" id="gp-lower" checked style="width:auto;"> Huruf kecil (a-z)</label><br>
+      <label><input type="checkbox" id="gp-num" checked style="width:auto;"> Angka (0-9)</label><br>
+      <label><input type="checkbox" id="gp-sym" style="width:auto;"> Simbol (!@#$%)</label>
+    </div>
+    <button class="btn" id="gp-make">Buat Password</button>
+    <div class="result" id="gp-result" style="display:none;">
+      <div class="captionCard mono" id="gp-output" style="font-size:1.1rem;"></div>
+      <button class="btn secondary small" id="gp-copy">Salin Password</button>
+    </div>
+  `);
+}
+function initGenPassword(){
+  const length=document.getElementById('gp-length'), lval=document.getElementById('gp-lval');
+  const upper=document.getElementById('gp-upper'), lower=document.getElementById('gp-lower'), num=document.getElementById('gp-num'), sym=document.getElementById('gp-sym');
+  const makeBtn=document.getElementById('gp-make'), result=document.getElementById('gp-result'), output=document.getElementById('gp-output'), copyBtn=document.getElementById('gp-copy');
+  length.addEventListener('input', ()=>lval.textContent=length.value);
+  makeBtn.addEventListener('click', ()=>{
+    let chars = '';
+    if(upper.checked) chars += 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    if(lower.checked) chars += 'abcdefghijkmnpqrstuvwxyz';
+    if(num.checked) chars += '23456789';
+    if(sym.checked) chars += '!@#$%^&*-_=+';
+    if(!chars){ chars = 'abcdefghijkmnpqrstuvwxyz23456789'; }
+    const len = Number(length.value);
+    const rand = new Uint32Array(len);
+    crypto.getRandomValues(rand);
+    let pass = '';
+    for(let i=0;i<len;i++){ pass += chars[rand[i] % chars.length]; }
+    output.textContent = pass;
+    result.style.display = 'block';
+  });
+  copyBtn.addEventListener('click', ()=>{
+    navigator.clipboard.writeText(output.textContent);
+    copyBtn.textContent='Tersalin!'; setTimeout(()=>copyBtn.textContent='Salin Password',1500);
+  });
+}
+/* ===== CHUNK_D_END ===== */
+
+/* ================= Surat Lamaran Kerja ================= */
+function templateLamaranHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="sl-nama">Nama lengkap</label><input type="text" id="sl-nama"></div>
+      <div class="field"><label for="sl-alamat">Alamat</label><input type="text" id="sl-alamat"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="sl-hp">No. HP</label><input type="text" id="sl-hp"></div>
+      <div class="field"><label for="sl-email">Email</label><input type="text" id="sl-email"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="sl-posisi">Posisi yang dilamar</label><input type="text" id="sl-posisi"></div>
+      <div class="field"><label for="sl-perusahaan">Nama perusahaan</label><input type="text" id="sl-perusahaan"></div>
+    </div>
+    <div class="field"><label for="sl-tambahan">Kalimat tambahan (opsional)</label><textarea id="sl-tambahan" placeholder="misal pengalaman relevan singkat"></textarea></div>
+    <button class="btn" id="sl-make">Download Surat Lamaran PDF</button>
+    <div class="result" id="sl-result" style="display:none;"></div>
+  `);
+}
+function initTemplateLamaran(){
+  const get = id=>document.getElementById(id).value.trim();
+  document.getElementById('sl-make').addEventListener('click', ()=>{
+    const nama=get('sl-nama')||'[Nama Lengkap]', alamat=get('sl-alamat')||'-', hp=get('sl-hp')||'-', email=get('sl-email')||'-';
+    const posisi=get('sl-posisi')||'[Posisi]', perusahaan=get('sl-perusahaan')||'[Perusahaan]', tambahan=get('sl-tambahan');
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({unit:'pt', format:'a4'});
+    let y = 60;
+    doc.setFontSize(11);
+    const tanggal = new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
+    doc.text(tanggal, 400, y); y+=30;
+    doc.text(`Kepada Yth.`, 40, y); y+=16;
+    doc.text(`HRD ${perusahaan}`, 40, y); y+=30;
+    doc.setFont('helvetica','bold'); doc.text('Perihal: Lamaran Pekerjaan', 40, y); doc.setFont('helvetica','normal'); y+=30;
+    const body = `Dengan hormat,\n\nSaya yang bertanda tangan di bawah ini:\nNama: ${nama}\nAlamat: ${alamat}\nNo. HP: ${hp}\nEmail: ${email}\n\nBermaksud mengajukan lamaran untuk posisi ${posisi} di ${perusahaan}. ${tambahan}\n\nBesar harapan saya untuk dapat bergabung dan berkontribusi di perusahaan yang Bapak/Ibu pimpin. Atas perhatian dan kesempatannya, saya ucapkan terima kasih.\n\nHormat saya,\n\n\n${nama}`;
+    doc.text(body, 40, y, {maxWidth:515, lineHeightFactor:1.6});
+    doc.save('surat-lamaran.pdf');
+    document.getElementById('sl-result').style.display='block';
+    document.getElementById('sl-result').innerHTML = '<p>Surat lamaran berhasil dibuat.</p>';
+  });
+}
+
+/* ================= CV Sederhana ================= */
+function templateCvHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="cv-nama">Nama lengkap</label><input type="text" id="cv-nama"></div>
+      <div class="field"><label for="cv-kontak">Kontak (email / HP)</label><input type="text" id="cv-kontak"></div>
+    </div>
+    <div class="field"><label for="cv-ringkasan">Ringkasan singkat</label><textarea id="cv-ringkasan" placeholder="1-2 kalimat tentang dirimu"></textarea></div>
+    <div class="field"><label for="cv-pendidikan">Pendidikan (satu baris satu item)</label><textarea id="cv-pendidikan" placeholder="2018-2022 - S1 Manajemen, Universitas X"></textarea></div>
+    <div class="field"><label for="cv-pengalaman">Pengalaman kerja (satu baris satu item)</label><textarea id="cv-pengalaman" placeholder="2022-sekarang - Staff Admin, PT Y"></textarea></div>
+    <div class="field"><label for="cv-skill">Skill (pisahkan dengan koma)</label><input type="text" id="cv-skill" placeholder="Excel, Komunikasi, Manajemen waktu"></div>
+    <button class="btn" id="cv-make">Download CV PDF</button>
+    <div class="result" id="cv-result" style="display:none;"></div>
+  `);
+}
+function initTemplateCv(){
+  const get = id=>document.getElementById(id).value.trim();
+  document.getElementById('cv-make').addEventListener('click', ()=>{
+    const nama=get('cv-nama')||'[Nama Lengkap]', kontak=get('cv-kontak')||'-';
+    const ringkasan=get('cv-ringkasan'), pendidikan=get('cv-pendidikan').split('\n').filter(Boolean);
+    const pengalaman=get('cv-pengalaman').split('\n').filter(Boolean), skill=get('cv-skill');
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({unit:'pt', format:'a4'});
+    let y = 55;
+    doc.setFont('helvetica','bold'); doc.setFontSize(22); doc.text(nama, 40, y);
+    doc.setFont('helvetica','normal'); doc.setFontSize(11); y+=20; doc.text(kontak, 40, y); y+=30;
+
+    function section(title){
+      doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.text(title, 40, y); y+=6;
+      doc.setDrawColor(200); doc.line(40, y, 555, y); y+=18;
+      doc.setFont('helvetica','normal'); doc.setFontSize(11);
+    }
+    if(ringkasan){ section('Ringkasan'); doc.text(ringkasan, 40, y, {maxWidth:515}); y += 20 + Math.ceil(ringkasan.length/90)*14; }
+    if(pendidikan.length){ section('Pendidikan'); pendidikan.forEach(line=>{ doc.text('• '+line, 40, y, {maxWidth:515}); y+=18; }); y+=10; }
+    if(pengalaman.length){ section('Pengalaman Kerja'); pengalaman.forEach(line=>{ doc.text('• '+line, 40, y, {maxWidth:515}); y+=18; }); y+=10; }
+    if(skill){ section('Skill'); doc.text(skill, 40, y, {maxWidth:515}); }
+
+    doc.save('cv.pdf');
+    document.getElementById('cv-result').style.display='block';
+    document.getElementById('cv-result').innerHTML = '<p>CV berhasil dibuat.</p>';
+  });
+}
+
+/* ================= Kwitansi ================= */
+function templateKwitansiHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="kw-nomor">Nomor kwitansi</label><input type="text" id="kw-nomor" placeholder="001/KW/2026"></div>
+      <div class="field"><label for="kw-tanggal">Tanggal</label><input type="text" id="kw-tanggal" placeholder="25 Agustus 2026"></div>
+    </div>
+    <div class="field"><label for="kw-dari">Telah terima dari</label><input type="text" id="kw-dari"></div>
+    <div class="row">
+      <div class="field"><label for="kw-jumlah">Jumlah uang (Rp)</label><input type="number" id="kw-jumlah" placeholder="500000"></div>
+      <div class="field"><label for="kw-untuk">Untuk pembayaran</label><input type="text" id="kw-untuk" placeholder="Pembayaran jasa desain logo"></div>
+    </div>
+    <div class="field"><label for="kw-penerima">Nama penerima uang</label><input type="text" id="kw-penerima"></div>
+    <button class="btn" id="kw-make">Download Kwitansi PDF</button>
+    <div class="result" id="kw-result" style="display:none;"></div>
+  `);
+}
+function initTemplateKwitansi(){
+  const get = id=>document.getElementById(id).value.trim();
+  document.getElementById('kw-make').addEventListener('click', ()=>{
+    const nomor=get('kw-nomor')||'-', tanggal=get('kw-tanggal')||'-', dari=get('kw-dari')||'-';
+    const jumlah=Number(document.getElementById('kw-jumlah').value)||0, untuk=get('kw-untuk')||'-', penerima=get('kw-penerima')||'-';
+    const terbilangText = terbilangClean(jumlah) + ' rupiah';
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({unit:'pt', format:'a4'});
+    doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.text('KWITANSI', 40, 60);
+    doc.setFont('helvetica','normal'); doc.setFontSize(11);
+    doc.text(`No: ${nomor}`, 420, 60);
+    doc.line(40, 75, 555, 75);
+    let y = 110;
+    const rows = [['Telah terima dari', dari], ['Jumlah uang', fmtRupiah(jumlah)], ['Terbilang', terbilangText], ['Untuk pembayaran', untuk], ['Tanggal', tanggal]];
+    rows.forEach(([label,val])=>{
+      doc.setFont('helvetica','bold'); doc.text(label, 40, y);
+      doc.setFont('helvetica','normal'); doc.text(': '+val, 200, y, {maxWidth:350});
+      y += 26;
+    });
+    y += 40;
+    doc.text('Penerima,', 420, y); y += 60;
+    doc.text(penerima, 420, y);
+    doc.save('kwitansi.pdf');
+    document.getElementById('kw-result').style.display='block';
+    document.getElementById('kw-result').innerHTML = `<p>Kwitansi berhasil dibuat: ${terbilangText}.</p>`;
+  });
+}
+/* ===== CHUNK_E_END ===== */
+
+/* ================= Konversi Panjang ================= */
+const UNIT_PANJANG = {mm:0.001, cm:0.01, m:1, km:1000, inch:0.0254, ft:0.3048, yard:0.9144, mile:1609.34};
+function convPanjangHTML(t){ return unitConverterHTML(t, UNIT_PANJANG, 'cp'); }
+function initConvPanjang(){ initUnitConverter(UNIT_PANJANG, 'cp'); }
+
+/* ================= Konversi Berat ================= */
+const UNIT_BERAT = {mg:0.001, g:1, ons:100, kg:1000, ton:1000000, oz:28.3495, lb:453.592};
+function convBeratHTML(t){ return unitConverterHTML(t, UNIT_BERAT, 'cb'); }
+function initConvBerat(){ initUnitConverter(UNIT_BERAT, 'cb'); }
+
+function unitConverterHTML(t, units, prefix){
+  const keys = Object.keys(units);
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="${prefix}-val">Nilai</label><input type="number" id="${prefix}-val" value="1"></div>
+      <div class="field"><label for="${prefix}-from">Dari</label><select id="${prefix}-from">${keys.map(k=>`<option value="${k}">${k}</option>`).join('')}</select></div>
+      <div class="field"><label for="${prefix}-to">Ke</label><select id="${prefix}-to">${keys.map((k,i)=>`<option value="${k}" ${i===1?'selected':''}>${k}</option>`).join('')}</select></div>
+    </div>
+    <div class="result">
+      <div class="stat"><span class="num" id="${prefix}-out">0</span><span class="lbl">Hasil konversi</span></div>
+    </div>
+  `);
+}
+function initUnitConverter(units, prefix){
+  const val=document.getElementById(`${prefix}-val`), from=document.getElementById(`${prefix}-from`), to=document.getElementById(`${prefix}-to`);
+  const out=document.getElementById(`${prefix}-out`);
+  function calc(){
+    const v = Number(val.value)||0;
+    const base = v * units[from.value];
+    const result = base / units[to.value];
+    out.textContent = result.toLocaleString('id-ID', {maximumFractionDigits:6}) + ' ' + to.value;
+  }
+  [val,from,to].forEach(el=>el.addEventListener('input', calc));
+  calc();
+}
+
+/* ================= Konversi Suhu ================= */
+function convSuhuHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="su-val">Nilai suhu</label><input type="number" id="su-val" value="0"></div>
+      <div class="field"><label for="su-from">Dari</label>
+        <select id="su-from"><option value="c">Celsius</option><option value="f">Fahrenheit</option><option value="k">Kelvin</option><option value="r">Reamur</option></select>
+      </div>
+    </div>
+    <div class="result">
+      <div class="stat-row">
+        <div class="stat"><span class="num" id="su-c">0°C</span><span class="lbl">Celsius</span></div>
+        <div class="stat"><span class="num" id="su-f">0°F</span><span class="lbl">Fahrenheit</span></div>
+        <div class="stat"><span class="num" id="su-k">0K</span><span class="lbl">Kelvin</span></div>
+        <div class="stat"><span class="num" id="su-r">0°R</span><span class="lbl">Reamur</span></div>
+      </div>
+    </div>
+  `);
+}
+function initConvSuhu(){
+  const val=document.getElementById('su-val'), from=document.getElementById('su-from');
+  const cOut=document.getElementById('su-c'), fOut=document.getElementById('su-f'), kOut=document.getElementById('su-k'), rOut=document.getElementById('su-r');
+  function calc(){
+    const v = Number(val.value)||0;
+    let celsius;
+    if(from.value==='c') celsius = v;
+    else if(from.value==='f') celsius = (v-32)*5/9;
+    else if(from.value==='k') celsius = v-273.15;
+    else celsius = v*5/4;
+    cOut.textContent = celsius.toFixed(2)+'°C';
+    fOut.textContent = (celsius*9/5+32).toFixed(2)+'°F';
+    kOut.textContent = (celsius+273.15).toFixed(2)+'K';
+    rOut.textContent = (celsius*4/5).toFixed(2)+'°R';
+  }
+  [val,from].forEach(el=>el.addEventListener('input', calc));
+  calc();
+}
+
+/* ================= Kalkulator Kurs Manual ================= */
+function convKursHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="kr-jumlah">Jumlah</label><input type="number" id="kr-jumlah" value="1"></div>
+      <div class="field"><label for="kr-rate">Kurs (1 unit mata uang asal = berapa Rupiah)</label><input type="number" id="kr-rate" placeholder="misal 16000"></div>
+    </div>
+    <p class="hint">Isi kursnya sendiri sesuai rate terbaru yang kamu punya — tool ini tidak mengambil data kurs otomatis.</p>
+    <div class="result">
+      <div class="stat"><span class="num" id="kr-out">Rp0</span><span class="lbl">Hasil konversi ke Rupiah</span></div>
+    </div>
+  `);
+}
+function initConvKurs(){
+  const jumlah=document.getElementById('kr-jumlah'), rate=document.getElementById('kr-rate'), out=document.getElementById('kr-out');
+  function calc(){ out.textContent = fmtRupiah((Number(jumlah.value)||0) * (Number(rate.value)||0)); }
+  [jumlah,rate].forEach(el=>el.addEventListener('input', calc));
+}
+
+/* ================= Konversi Zona Waktu ================= */
+const TIMEZONES = {WIB:7, WITA:8, WIT:9, London:0, Tokyo:9, 'New York':-5, Sydney:10};
+function convWaktuHTML(t){
+  const zones = Object.keys(TIMEZONES);
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="wk-jam">Jam (HH:MM)</label><input type="text" id="wk-jam" placeholder="14:30"></div>
+      <div class="field"><label for="wk-from">Zona asal</label><select id="wk-from">${zones.map(z=>`<option>${z}</option>`).join('')}</select></div>
+      <div class="field"><label for="wk-to">Zona tujuan</label><select id="wk-to">${zones.map((z,i)=>`<option ${i===1?'selected':''}>${z}</option>`).join('')}</select></div>
+    </div>
+    <p class="hint">Pakai selisih UTC standar, belum memperhitungkan waktu musim panas (DST) di luar Indonesia.</p>
+    <div class="result">
+      <div class="stat"><span class="num" id="wk-out">-</span><span class="lbl">Jam di zona tujuan</span></div>
+    </div>
+  `);
+}
+function initConvWaktu(){
+  const jam=document.getElementById('wk-jam'), from=document.getElementById('wk-from'), to=document.getElementById('wk-to'), out=document.getElementById('wk-out');
+  function calc(){
+    const m = jam.value.match(/^(\d{1,2}):(\d{2})$/);
+    if(!m){ out.textContent='Format jam salah'; return; }
+    let h = Number(m[1]), min = Number(m[2]);
+    const diff = TIMEZONES[to.value] - TIMEZONES[from.value];
+    let total = h*60+min + diff*60;
+    total = ((total % 1440) + 1440) % 1440;
+    const outH = Math.floor(total/60), outM = total%60;
+    out.textContent = `${String(outH).padStart(2,'0')}:${String(outM).padStart(2,'0')} ${to.value}`;
+  }
+  [jam,from,to].forEach(el=>el.addEventListener('input', calc));
+}
+
+/* ================= Angka ke Terbilang (tool) ================= */
+function angkaTerbilangHTML(t){
+  return toolShell(t, `
+    <div class="row">
+      <div class="field"><label for="tb-angka">Angka</label><input type="number" id="tb-angka" placeholder="misal 1250000"></div>
+      <div class="field"><label><input type="checkbox" id="tb-rupiah" checked style="width:auto;"> Tambahkan kata "Rupiah"</label></div>
+    </div>
+    <div class="result">
+      <div class="captionCard" id="tb-out">-</div>
+    </div>
+  `);
+}
+function initAngkaTerbilang(){
+  const angka=document.getElementById('tb-angka'), rupiah=document.getElementById('tb-rupiah'), out=document.getElementById('tb-out');
+  function calc(){
+    const n = Number(angka.value)||0;
+    let text = terbilangClean(n);
+    if(rupiah.checked) text += ' Rupiah';
+    out.textContent = text;
+  }
+  [angka,rupiah].forEach(el=>el.addEventListener('input', calc));
+}
+/* ===== CHUNK_F_END ===== */
+
+/* ================= Hitung Kata & Karakter ================= */
+function wordCounterHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="wc-text">Tempel teksmu di sini</label>
+      <textarea id="wc-text" rows="8" placeholder="Ketik atau tempel teks..."></textarea>
+    </div>
+    <div class="result">
+      <div class="stat-row">
+        <div class="stat"><span class="num" id="wc-words">0</span><span class="lbl">Kata</span></div>
+        <div class="stat"><span class="num" id="wc-chars">0</span><span class="lbl">Karakter (dgn spasi)</span></div>
+        <div class="stat"><span class="num" id="wc-charsns">0</span><span class="lbl">Karakter (tanpa spasi)</span></div>
+        <div class="stat"><span class="num" id="wc-sentences">0</span><span class="lbl">Kalimat</span></div>
+        <div class="stat"><span class="num" id="wc-read">0 menit</span><span class="lbl">Estimasi waktu baca</span></div>
+      </div>
+    </div>
+  `);
+}
+function initWordCounter(){
+  const textEl=document.getElementById('wc-text');
+  const words=document.getElementById('wc-words'), chars=document.getElementById('wc-chars'), charsns=document.getElementById('wc-charsns');
+  const sentences=document.getElementById('wc-sentences'), read=document.getElementById('wc-read');
+  function calc(){
+    const text = textEl.value;
+    const wordArr = text.trim().split(/\s+/).filter(Boolean);
+    words.textContent = text.trim() ? wordArr.length : 0;
+    chars.textContent = text.length;
+    charsns.textContent = text.replace(/\s/g,'').length;
+    const sentenceArr = text.split(/[.!?]+/).filter(s=>s.trim().length>0);
+    sentences.textContent = sentenceArr.length;
+    read.textContent = Math.max(1, Math.ceil(wordArr.length/200)) + ' menit';
+  }
+  textEl.addEventListener('input', calc);
+}
+
+/* ================= Ubah Huruf Besar/Kecil ================= */
+function caseConverterHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="cvv-input">Teks</label>
+      <textarea id="cvv-input" rows="6" placeholder="Ketik teksmu di sini..."></textarea>
+    </div>
+    <div class="row">
+      <button class="btn secondary small" id="cvv-upper">UPPERCASE</button>
+      <button class="btn secondary small" id="cvv-lower">lowercase</button>
+      <button class="btn secondary small" id="cvv-title">Title Case</button>
+      <button class="btn secondary small" id="cvv-sentence">Sentence case</button>
+    </div>
+    <div class="result">
+      <textarea id="cvv-output" rows="6" readonly></textarea>
+      <button class="btn small" id="cvv-copy" style="margin-top:12px;">Salin Hasil</button>
+    </div>
+  `);
+}
+function initCaseConverter(){
+  const input=document.getElementById('cvv-input'), output=document.getElementById('cvv-output');
+  document.getElementById('cvv-upper').addEventListener('click', ()=>output.value = input.value.toUpperCase());
+  document.getElementById('cvv-lower').addEventListener('click', ()=>output.value = input.value.toLowerCase());
+  document.getElementById('cvv-title').addEventListener('click', ()=>{
+    output.value = input.value.replace(/\w\S*/g, w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase());
+  });
+  document.getElementById('cvv-sentence').addEventListener('click', ()=>{
+    const lower = input.value.toLowerCase();
+    output.value = lower.replace(/(^\s*\w|[.!?]\s*\w)/g, c=>c.toUpperCase());
+  });
+  document.getElementById('cvv-copy').addEventListener('click', ()=>{
+    navigator.clipboard.writeText(output.value);
+    const b=document.getElementById('cvv-copy'); b.textContent='Tersalin!'; setTimeout(()=>b.textContent='Salin Hasil',1500);
+  });
+}
+
+/* ================= Generator Slug URL ================= */
+function slugGeneratorHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="sg-input">Judul / teks</label>
+      <input type="text" id="sg-input" placeholder="misal 'Cara Bikin Kopi Susu Enak'">
+    </div>
+    <div class="result">
+      <div class="captionCard mono" id="sg-output">-</div>
+      <button class="btn secondary small" id="sg-copy">Salin Slug</button>
+    </div>
+  `);
+}
+function initSlugGenerator(){
+  const input=document.getElementById('sg-input'), output=document.getElementById('sg-output');
+  function calc(){
+    const slug = input.value.toLowerCase().trim()
+      .replace(/[^a-z0-9\s-]/g,'')
+      .replace(/\s+/g,'-')
+      .replace(/-+/g,'-');
+    output.textContent = slug || '-';
+  }
+  input.addEventListener('input', calc);
+  document.getElementById('sg-copy').addEventListener('click', ()=>{
+    navigator.clipboard.writeText(output.textContent);
+    const b=document.getElementById('sg-copy'); b.textContent='Tersalin!'; setTimeout(()=>b.textContent='Salin Slug',1500);
+  });
+}
+
+/* ================= Cek Kekuatan Password ================= */
+function passwordCheckerHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="pc-input">Password yang mau dicek</label>
+      <input type="text" id="pc-input" placeholder="Ketik password...">
+      <p class="hint">Password tidak dikirim ke mana pun, semua dicek langsung di browser.</p>
+    </div>
+    <div class="result">
+      <div class="stat"><span class="num" id="pc-label">-</span><span class="lbl">Tingkat kekuatan</span></div>
+      <ul id="pc-tips" style="margin-top:12px; font-size:0.88rem; color:#5b6470;"></ul>
+    </div>
+  `);
+}
+function initPasswordChecker(){
+  const input=document.getElementById('pc-input'), label=document.getElementById('pc-label'), tips=document.getElementById('pc-tips');
+  function calc(){
+    const p = input.value;
+    let score = 0;
+    const checks = [
+      {ok: p.length>=8, msg:'Minimal 8 karakter'},
+      {ok: p.length>=12, msg:'Lebih aman kalau 12+ karakter'},
+      {ok: /[A-Z]/.test(p), msg:'Ada huruf besar'},
+      {ok: /[a-z]/.test(p), msg:'Ada huruf kecil'},
+      {ok: /[0-9]/.test(p), msg:'Ada angka'},
+      {ok: /[^A-Za-z0-9]/.test(p), msg:'Ada simbol'},
+    ];
+    score = checks.filter(c=>c.ok).length;
+    const labels = ['Sangat Lemah','Lemah','Cukup','Kuat','Sangat Kuat','Sangat Kuat'];
+    label.textContent = p ? labels[Math.min(score,5)] : '-';
+    tips.innerHTML = checks.filter(c=>!c.ok).map(c=>`<li>${c.msg}</li>`).join('') || (p ? '<li>Password ini sudah cukup baik 👍</li>' : '');
+  }
+  input.addEventListener('input', calc);
+}
+
+/* ================= Bersihkan Baris Teks ================= */
+function removeDuplicateLinesHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="rd-input">Tempel daftar teks (satu baris satu item)</label>
+      <textarea id="rd-input" rows="8"></textarea>
+    </div>
+    <div class="row">
+      <button class="btn secondary small" id="rd-empty">Hapus Baris Kosong</button>
+      <button class="btn secondary small" id="rd-dup">Hapus Duplikat</button>
+      <button class="btn secondary small" id="rd-sort">Urutkan A-Z</button>
+    </div>
+    <div class="result">
+      <textarea id="rd-output" rows="8" readonly></textarea>
+      <button class="btn small" id="rd-copy" style="margin-top:12px;">Salin Hasil</button>
+    </div>
+  `);
+}
+function initRemoveDuplicateLines(){
+  const input=document.getElementById('rd-input'), output=document.getElementById('rd-output');
+  function getLines(){ return (output.value || input.value).split('\n'); }
+  document.getElementById('rd-empty').addEventListener('click', ()=>{
+    output.value = getLines().filter(l=>l.trim()!=='').join('\n');
+  });
+  document.getElementById('rd-dup').addEventListener('click', ()=>{
+    output.value = [...new Set(getLines())].join('\n');
+  });
+  document.getElementById('rd-sort').addEventListener('click', ()=>{
+    output.value = getLines().sort((a,b)=>a.localeCompare(b, 'id')).join('\n');
+  });
+  document.getElementById('rd-copy').addEventListener('click', ()=>{
+    navigator.clipboard.writeText(output.value);
+    const b=document.getElementById('rd-copy'); b.textContent='Tersalin!'; setTimeout(()=>b.textContent='Salin Hasil',1500);
+  });
+}
+
+/* ================= Pengocok Nama / Undian ================= */
+function randomPickerHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="rpk-input">Daftar nama (satu baris satu nama)</label>
+      <textarea id="rpk-input" rows="8" placeholder="Andi\nBudi\nCitra\nDewi"></textarea>
+    </div>
+    <div class="field">
+      <label for="rpk-jumlah">Jumlah pemenang</label>
+      <input type="number" id="rpk-jumlah" value="1" min="1">
+    </div>
+    <button class="btn" id="rpk-make">Kocok!</button>
+    <div class="result" id="rpk-result" style="display:none;"></div>
+  `);
+}
+function initRandomPicker(){
+  const input=document.getElementById('rpk-input'), jumlah=document.getElementById('rpk-jumlah');
+  const makeBtn=document.getElementById('rpk-make'), result=document.getElementById('rpk-result');
+  makeBtn.addEventListener('click', ()=>{
+    const names = input.value.split('\n').map(n=>n.trim()).filter(Boolean);
+    if(!names.length) return;
+    const n = Math.min(Number(jumlah.value)||1, names.length);
+    const shuffled = [...names].sort(()=>Math.random()-0.5);
+    const winners = shuffled.slice(0,n);
+    result.style.display = 'block';
+    result.innerHTML = `<div class="captionCard" style="font-size:1.1rem;">🎉 ${winners.join(', ')}</div>`;
+  });
+}
+
+/* ================= Kalkulator Umur ================= */
+function calcUmurHTML(t){
+  return toolShell(t, `
+    <div class="field">
+      <label for="um-tanggal">Tanggal lahir</label>
+      <input type="date" id="um-tanggal">
+    </div>
+    <div class="result" id="um-result" style="display:none;">
+      <div class="stat-row">
+        <div class="stat"><span class="num" id="um-umur">-</span><span class="lbl">Umur kamu sekarang</span></div>
+        <div class="stat"><span class="num" id="um-hari">-</span><span class="lbl">Total hari hidup</span></div>
+        <div class="stat"><span class="num" id="um-ultah">-</span><span class="lbl">Hari menuju ulang tahun</span></div>
+      </div>
+    </div>
+  `);
+}
+function initCalcUmur(){
+  const input=document.getElementById('um-tanggal'), result=document.getElementById('um-result');
+  const umur=document.getElementById('um-umur'), hari=document.getElementById('um-hari'), ultah=document.getElementById('um-ultah');
+  input.addEventListener('change', ()=>{
+    if(!input.value) return;
+    const lahir = new Date(input.value);
+    const now = new Date();
+    let years = now.getFullYear()-lahir.getFullYear();
+    let months = now.getMonth()-lahir.getMonth();
+    let days = now.getDate()-lahir.getDate();
+    if(days<0){ months--; days += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
+    if(months<0){ years--; months += 12; }
+    umur.textContent = `${years} th ${months} bln ${days} hr`;
+    hari.textContent = Math.floor((now-lahir)/(1000*60*60*24)).toLocaleString('id-ID') + ' hari';
+    let nextBday = new Date(now.getFullYear(), lahir.getMonth(), lahir.getDate());
+    if(nextBday < now) nextBday.setFullYear(now.getFullYear()+1);
+    ultah.textContent = Math.ceil((nextBday-now)/(1000*60*60*24)) + ' hari lagi';
+    result.style.display = 'block';
+  });
+}
+
+/* ================= Stopwatch & Timer ================= */
+function stopwatchHTML(t){
+  return toolShell(t, `
+    <div class="chips" style="margin-bottom:20px;">
+      <span class="chip active" data-tab="sw">Stopwatch</span>
+      <span class="chip" data-tab="tm">Timer</span>
+    </div>
+    <div id="sw-panel">
+      <div class="captionCard mono" id="sw-display" style="font-size:2rem; text-align:center;">00:00.0</div>
+      <div class="row" style="margin-top:14px; justify-content:center;">
+        <button class="btn" id="sw-start">Mulai</button>
+        <button class="btn secondary" id="sw-stop">Jeda</button>
+        <button class="btn secondary" id="sw-reset">Reset</button>
+      </div>
+    </div>
+    <div id="tm-panel" style="display:none;">
+      <div class="row">
+        <div class="field"><label for="tm-min">Menit</label><input type="number" id="tm-min" value="5" min="0"></div>
+        <div class="field"><label for="tm-sec">Detik</label><input type="number" id="tm-sec" value="0" min="0" max="59"></div>
+      </div>
+      <div class="captionCard mono" id="tm-display" style="font-size:2rem; text-align:center;">05:00</div>
+      <div class="row" style="margin-top:14px; justify-content:center;">
+        <button class="btn" id="tm-start">Mulai</button>
+        <button class="btn secondary" id="tm-stop">Jeda</button>
+        <button class="btn secondary" id="tm-reset">Reset</button>
+      </div>
+      <p class="hint" id="tm-msg" style="text-align:center;"></p>
+    </div>
+  `);
+}
+function initStopwatch(){
+  document.querySelectorAll('.chip[data-tab]').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      document.querySelectorAll('.chip[data-tab]').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      document.getElementById('sw-panel').style.display = chip.dataset.tab==='sw' ? 'block':'none';
+      document.getElementById('tm-panel').style.display = chip.dataset.tab==='tm' ? 'block':'none';
+    });
+  });
+
+  let swInterval=null, swElapsed=0, swStart=0;
+  const swDisplay=document.getElementById('sw-display');
+  function swRender(){
+    const ms = swElapsed;
+    const m = Math.floor(ms/60000);
+    const s = Math.floor((ms%60000)/1000);
+    const d = Math.floor((ms%1000)/100);
+    swDisplay.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${d}`;
+  }
+  document.getElementById('sw-start').addEventListener('click', ()=>{
+    if(swInterval) return;
+    swStart = Date.now() - swElapsed;
+    swInterval = setInterval(()=>{ swElapsed = Date.now()-swStart; swRender(); }, 100);
+  });
+  document.getElementById('sw-stop').addEventListener('click', ()=>{ clearInterval(swInterval); swInterval=null; });
+  document.getElementById('sw-reset').addEventListener('click', ()=>{ clearInterval(swInterval); swInterval=null; swElapsed=0; swRender(); });
+
+  let tmInterval=null, tmRemaining=0;
+  const tmDisplay=document.getElementById('tm-display'), tmMsg=document.getElementById('tm-msg');
+  const tmMin=document.getElementById('tm-min'), tmSec=document.getElementById('tm-sec');
+  function tmRender(){
+    const m = Math.floor(tmRemaining/60), s = tmRemaining%60;
+    tmDisplay.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+  function tmSyncFromInputs(){ tmRemaining = (Number(tmMin.value)||0)*60 + (Number(tmSec.value)||0); tmRender(); }
+  tmMin.addEventListener('input', tmSyncFromInputs);
+  tmSec.addEventListener('input', tmSyncFromInputs);
+  tmSyncFromInputs();
+  document.getElementById('tm-start').addEventListener('click', ()=>{
+    if(tmInterval) return;
+    if(tmRemaining<=0) tmSyncFromInputs();
+    tmMsg.textContent = '';
+    tmInterval = setInterval(()=>{
+      tmRemaining--;
+      if(tmRemaining<=0){
+        tmRemaining=0; tmRender(); clearInterval(tmInterval); tmInterval=null;
+        tmMsg.textContent = "Waktu habis! ⏰";
+        return;
+      }
+      tmRender();
+    }, 1000);
+  });
+  document.getElementById('tm-stop').addEventListener('click', ()=>{ clearInterval(tmInterval); tmInterval=null; });
+  document.getElementById('tm-reset').addEventListener('click', ()=>{ clearInterval(tmInterval); tmInterval=null; tmMsg.textContent=''; tmSyncFromInputs(); });
+}
+/* ===== CHUNK_G_END ===== */
+
+/* ================= ROUTER ================= */
+const BLOG_POSTS = [
+  {
+    slug:'cara-kompres-gambar-tanpa-turun-kualitas',
+    title:'Cara Kompres Gambar Tanpa (Terlalu) Turun Kualitas',
+    cat:'Tutorial', date:'20 Agustus 2026',
+    excerpt:'Kompres gambar itu soal kompromi antara ukuran file dan kualitas. Ini cara supaya hasilnya tetap enak dilihat.',
+    content:[
+      'Banyak orang mengira kompres gambar itu asal turunkan kualitas sampai ukurannya kecil. Padahal ada titik optimal di mana ukuran file sudah jauh lebih kecil, tapi mata kita hampir tidak bisa membedakan bedanya dengan aslinya.',
+      'Untuk foto produk atau foto biasa, kualitas JPEG di angka 70-80% biasanya sudah cukup. Di atas itu, ukuran file naik signifikan tapi peningkatan kualitasnya nyaris tidak terasa. Di bawah 50%, biasanya mulai terlihat blocky terutama di area dengan banyak detail atau gradasi warna.',
+      'Kalau gambarmu banyak teks atau garis tegas (misalnya screenshot atau poster), pertimbangkan pakai PNG daripada JPEG, karena PNG lebih cocok untuk gambar dengan warna solid dan tepi tajam.',
+      'Coba beberapa level kualitas dan bandingkan langsung — itu cara paling gampang menemukan titik yang pas buat kebutuhanmu, tanpa perlu paham teori kompresi gambar secara detail.'
+    ]
+  },
+  {
+    slug:'hitung-margin-keuntungan-usaha-kecil',
+    title:'3 Cara Sederhana Menghitung Margin Keuntungan Usaha Kecil',
+    cat:'Tips Bisnis', date:'18 Agustus 2026',
+    excerpt:'Sebelum mikirin strategi marketing yang ribet, pastikan dulu kamu tahu persis berapa untung dari tiap barang yang terjual.',
+    content:[
+      'Banyak usaha kecil jalan bertahun-tahun tanpa benar-benar tahu berapa keuntungan bersih per produk. Padahal ini angka paling dasar yang menentukan apakah bisnis itu sehat atau cuma terlihat ramai tapi sebenarnya tipis marginnya.',
+      'Cara pertama, hitung dari sisi produk: keuntungan per unit = harga jual dikurangi modal per unit. Angka ini penting untuk tahu produk mana yang paling menguntungkan, bukan cuma paling laris.',
+      'Cara kedua, hitung persentase margin dari harga jual, bukan dari modal. Ini penting karena margin dari modal (markup) dan margin dari harga jual itu angkanya beda, dan banyak yang salah kaprah menyamakan keduanya saat menentukan harga.',
+      'Cara ketiga, hitung break even point — berapa unit yang harus terjual supaya biaya tetap bulanan (sewa, gaji, listrik) sudah tertutup. Setelah lewat titik itu, barulah penjualan berikutnya benar-benar jadi untung bersih.'
+    ]
+  },
+  {
+    slug:'atur-waktu-kerja-remote',
+    title:'Cara Mengatur Waktu biar Kerja Remote Tetap Produktif',
+    cat:'Tips Kerja', date:'15 Agustus 2026',
+    excerpt:'Kerja dari rumah kelihatannya fleksibel, tapi tanpa batasan yang jelas, waktu kerja dan waktu istirahat gampang campur aduk.',
+    content:[
+      'Masalah utama kerja remote bukan soal disiplin, tapi soal batasan yang kabur. Tanpa jam masuk-pulang kantor yang jelas, otak sulit membedakan kapan waktunya fokus dan kapan waktunya istirahat.',
+      'Coba tetapkan jam kerja yang konsisten, walau fleksibel. Bukan berarti harus kaku 9 pagi sampai 5 sore, tapi tentukan rentang waktu yang kamu pegang setiap hari, supaya orang lain juga tahu kapan bisa mengharapkan responmu.',
+      'Pisahkan ruang kerja dari ruang istirahat sebisa mungkin, meskipun cuma beda sudut ruangan. Sinyal fisik ini membantu otak beralih mode lebih cepat dibanding kerja sambil rebahan di kasur.',
+      'Terakhir, kasih diri sendiri waktu transisi di akhir hari kerja — semacam pengganti perjalanan pulang kantor yang biasanya jadi jeda mental. Bisa jalan kaki sebentar, atau sekadar mematikan notifikasi kerja secara sadar.'
+    ]
+  },
+  {
+    slug:'menulis-prompt-ai-lebih-efektif',
+    title:'Cara Menulis Prompt AI yang Lebih Efektif untuk Pemula',
+    cat:'Tutorial AI', date:'12 Agustus 2026',
+    excerpt:'Hasil dari AI sangat bergantung pada bagaimana kamu bertanya. Ini beberapa prinsip dasar yang bisa langsung dipraktikkan.',
+    content:[
+      'Prinsip paling penting: makin spesifik prompt-nya, makin relevan hasilnya. Daripada menulis "buatkan caption jualan", coba sebutkan produknya apa, siapa target pembelinya, dan gaya bahasa seperti apa yang kamu mau.',
+      'Beri konteks di awal, bukan cuma instruksi. Jelaskan situasinya dulu sebelum meminta hasil akhir — misalnya jenis bisnis, audiens, atau batasan yang perlu dipatuhi.',
+      'Jangan ragu kasih contoh. Kalau kamu punya contoh hasil yang kamu suka sebelumnya, sertakan sebagai referensi gaya. AI jauh lebih mudah meniru pola daripada menebak selera dari deskripsi abstrak.',
+      'Terakhir, anggap prompt pertama sebagai draft. Kalau hasilnya belum pas, lanjutkan dengan revisi spesifik ("buat lebih santai", "perpendek jadi 2 kalimat") daripada mulai dari nol lagi.'
+    ]
+  },
+  {
+    slug:'kapan-harus-pakai-pdf-vs-gambar',
+    title:'Kapan Harus Pakai PDF, Kapan Cukup Gambar Biasa?',
+    cat:'Tutorial', date:'9 Agustus 2026',
+    excerpt:'Dua format ini sering dipakai bergantian padahal fungsinya beda. Ini cara memilih yang tepat sesuai kebutuhan.',
+    content:[
+      'PDF cocok dipakai kalau dokumenmu perlu tetap rapi di perangkat apa pun — tata letak, font, dan halaman tidak berubah walau dibuka di HP, laptop, atau dicetak. Ini yang bikin PDF jadi standar buat surat resmi, invoice, atau proposal.',
+      'Gambar (JPG/PNG) lebih cocok untuk konten visual yang memang isinya gambar — foto produk, poster, atau screenshot yang mau langsung ditempel di media sosial.',
+      'Kalau kamu punya banyak foto yang perlu dikirim sebagai satu file rapi (misalnya bukti transfer atau dokumen yang difoto), gabungkan jadi satu PDF supaya penerima tidak perlu buka banyak file terpisah.',
+      'Sebaliknya, kalau kamu punya PDF tapi cuma butuh satu halamannya untuk dibagikan cepat di WhatsApp atau Instagram, ubah saja halaman itu jadi gambar — lebih ringan dan langsung bisa dilihat tanpa buka aplikasi PDF.'
+    ]
+  },
+  {
+    slug:'zakat-penghasilan-untuk-freelancer',
+    title:'Zakat Penghasilan buat Freelancer, Ini yang Perlu Kamu Tahu',
+    cat:'Tips Bisnis', date:'5 Agustus 2026',
+    excerpt:'Penghasilan freelancer sering naik-turun tiap bulan, jadi menghitung zakat profesi butuh sedikit penyesuaian.',
+    content:[
+      'Zakat penghasilan (zakat profesi) pada dasarnya dihitung dari total penghasilan yang sudah mencapai nisab, dengan kadar umum 2.5%. Bedanya dengan karyawan tetap, penghasilan freelancer sering tidak rata tiap bulan.',
+      'Salah satu pendekatan yang umum dipakai adalah menghitung dari total penghasilan setahun, lalu membandingkannya dengan nisab (setara harga 85 gram emas). Kalau sudah melewati nisab, zakat dihitung dari total penghasilan tersebut.',
+      'Karena ini menyangkut hukum agama dan bisa berbeda pendapat antar mazhab atau lembaga, sebaiknya konsultasikan perhitungan yang tepat dengan lembaga zakat resmi atau ustadz yang kamu percaya — artikel ini hanya gambaran umum, bukan fatwa.',
+      'Yang penting dicatat: mencatat penghasilan bulanan secara rutin akan sangat membantu saat waktunya menghitung zakat tahunan, dibanding harus mengira-ngira di akhir tahun.'
+    ]
+  },
+];
+
+function blogCardHTML(p){
+  return `<a class="blog-card" href="#blog-${p.slug}">
+    <span class="cat mono">${p.cat} · ${p.date}</span>
+    <h3>${p.title}</h3>
+    <p>${p.excerpt}</p>
+  </a>`;
+}
+
+function blogListHTML(){
+  return `
+  <section class="block wrap">
+    <a class="back" href="#home">&larr; Beranda</a>
+    <div class="section-head" style="margin-top:14px;"><span class="tag">BLOG</span><h2>Semua artikel</h2></div>
+    <div class="grid">${BLOG_POSTS.map(blogCardHTML).join('')}</div>
+  </section>`;
+}
+
+function blogPostHTML(slug){
+  const p = BLOG_POSTS.find(b=>b.slug===slug);
+  if(!p) return `<section class="block wrap"><a class="back" href="#blog">&larr; Blog</a><p style="margin-top:16px;">Artikel tidak ditemukan.</p></section>`;
+  return `
+  <section class="block wrap">
+    <a class="back" href="#blog">&larr; Semua artikel</a>
+    <article class="post" style="margin-top:14px; max-width:720px;">
+      <p class="meta">${p.cat} · ${p.date}</p>
+      <h1 class="display" style="font-size:1.8rem; margin:0 0 20px;">${p.title}</h1>
+      ${p.content.map(para=>`<p>${para}</p>`).join('')}
+    </article>
+    ${adSlotHTML()}
+  </section>`;
+}
+
+function infoPageHTML(title, bodyHTML){
+  return `
+  <section class="block wrap">
+    <a class="back" href="#home">&larr; Beranda</a>
+    <h1 class="display" style="font-size:1.7rem; margin:14px 0 18px;">${title}</h1>
+    <div class="infopage" style="max-width:720px;">${bodyHTML}</div>
+  </section>`;
+}
+
+function aboutHTML(){
+  return infoPageHTML('Tentang Kami', `
+    <p>Toolkita adalah kumpulan tools gratis yang dibuat untuk bantu kerjaan harian jadi lebih ringan — mulai dari konversi file, kalkulator bisnis, sampai template dokumen. Semua tools jalan langsung di browser kamu, tanpa perlu install apa pun.</p>
+    <p>Fokus kami sederhana: bikin tools yang cepat dipakai, tanpa akun, tanpa ribet, dan gratis untuk kebutuhan sehari-hari — baik buat pelajar, freelancer, maupun pemilik usaha kecil.</p>
+  `);
+}
+function contactHTML(){
+  return infoPageHTML('Kontak', `
+    <p>Ada saran, laporan bug, atau tools baru yang kamu butuhkan? Kami senang dengar masukan.</p>
+    <p>Email: <strong>halo@toolkita.id</strong> <span style="color:#8a8f97;">(ganti dengan email aslimu)</span></p>
+    <p>Kami biasanya balas dalam 1-2 hari kerja.</p>
+  `);
+}
+function privacyHTML(){
+  return infoPageHTML('Kebijakan Privasi', `
+    <p>Sebagian besar tools di Toolkita memproses file (gambar, PDF, dokumen) langsung di browser kamu — bukan di server kami. Artinya file yang kamu upload tidak pernah dikirim ke mana pun, hanya diproses secara lokal di perangkatmu.</p>
+    <h2>Data yang kami kumpulkan</h2>
+    <ul>
+      <li>Data penggunaan umum (halaman yang dikunjungi) untuk keperluan analitik, bila diaktifkan.</li>
+      <li>Kami tidak menyimpan file yang kamu upload ke tools manapun di situs ini.</li>
+    </ul>
+    <p style="color:#8a8f97;">Catatan: ganti bagian ini sesuai kebijakan sebenarnya, terutama kalau nanti menambahkan iklan atau analytics pihak ketiga.</p>
+  `);
+}
+function termsHTML(){
+  return infoPageHTML('Syarat Penggunaan', `
+    <p>Dengan menggunakan Toolkita, kamu setuju memakai tools di sini untuk keperluan yang wajar dan tidak melanggar hukum.</p>
+    <ul>
+      <li>Semua tools disediakan "apa adanya", tanpa jaminan hasil 100% akurat untuk setiap kasus.</li>
+      <li>Kami tidak bertanggung jawab atas kerugian akibat penggunaan hasil dari tools ini (misalnya kesalahan kalkulasi finansial).</li>
+      <li>Dilarang menyalahgunakan tools untuk aktivitas ilegal.</li>
+    </ul>
+    <p style="color:#8a8f97;">Catatan: ini teks syarat penggunaan generik — sesuaikan lagi dengan kebutuhan hukum aktual sebelum dipakai produksi.</p>
+  `);
+}
+
+/* ================= ROUTER ================= */
+const APP = document.getElementById('app');
+
+const TOOL_RENDERERS = {
+  'jpg2pdf': {html: jpg2pdfHTML, init: initJpg2Pdf},
+  'pdf2jpg': {html: pdf2jpgHTML, init: initPdf2Jpg},
+  'compress-img': {html: compressImgHTML, init: initCompressImg},
+  'resize-img': {html: resizeImgHTML, init: initResizeImg},
+  'qrcode': {html: qrcodeHTML, init: initQrcode},
+  'calc-profit': {html: calcProfitHTML, init: initCalcProfit},
+  'calc-price': {html: calcPriceHTML, init: initCalcPrice},
+  'gen-name': {html: genNameHTML, init: initGenName},
+  'gen-caption': {html: genCaptionHTML, init: initGenCaption},
+  'gen-invoice': {html: genInvoiceHTML, init: initGenInvoice},
+
+  'merge-pdf': {html: mergePdfHTML, init: initMergePdf},
+  'rotate-pdf': {html: rotatePdfHTML, init: initRotatePdf},
+  'pdf-to-text': {html: pdfToTextHTML, init: initPdfToText},
+
+  'jpg-to-png': {html: t=>formatConvertHTML(t,'image/png','png',false), init: ()=>initFormatConvert('image/png','png',false)},
+  'png-to-jpg': {html: t=>formatConvertHTML(t,'image/jpeg','jpg',true), init: ()=>initFormatConvert('image/jpeg','jpg',true)},
+  'crop-img': {html: cropImgHTML, init: initCropImg},
+  'rotate-img': {html: rotateImgHTML, init: initRotateImg},
+  'watermark-img': {html: watermarkImgHTML, init: initWatermarkImg},
+  'grayscale-img': {html: grayscaleImgHTML, init: initGrayscaleImg},
+  'img-to-base64': {html: imgToBase64HTML, init: initImgToBase64},
+
+  'calc-bep': {html: calcBepHTML, init: initCalcBep},
+  'calc-cicilan': {html: calcCicilanHTML, init: initCalcCicilan},
+  'calc-diskon': {html: calcDiskonHTML, init: initCalcDiskon},
+  'calc-ppn': {html: calcPpnHTML, init: initCalcPpn},
+  'calc-roi': {html: calcRoiHTML, init: initCalcRoi},
+  'calc-zakat': {html: calcZakatHTML, init: initCalcZakat},
+  'calc-lembur': {html: calcLemburHTML, init: initCalcLembur},
+
+  'gen-hashtag': {html: genHashtagHTML, init: initGenHashtag},
+  'gen-bio': {html: genBioHTML, init: initGenBio},
+  'gen-idekonten': {html: genIdeKontenHTML, init: initGenIdeKonten},
+  'gen-promptai': {html: genPromptAiHTML, init: initGenPromptAi},
+  'gen-ucapan': {html: genUcapanHTML, init: initGenUcapan},
+  'gen-password': {html: genPasswordHTML, init: initGenPassword},
+
+  'template-lamaran': {html: templateLamaranHTML, init: initTemplateLamaran},
+  'template-cv': {html: templateCvHTML, init: initTemplateCv},
+  'template-kwitansi': {html: templateKwitansiHTML, init: initTemplateKwitansi},
+
+  'conv-panjang': {html: convPanjangHTML, init: initConvPanjang},
+  'conv-berat': {html: convBeratHTML, init: initConvBerat},
+  'conv-suhu': {html: convSuhuHTML, init: initConvSuhu},
+  'conv-kurs': {html: convKursHTML, init: initConvKurs},
+  'conv-waktu': {html: convWaktuHTML, init: initConvWaktu},
+  'angka-terbilang': {html: angkaTerbilangHTML, init: initAngkaTerbilang},
+
+  'word-counter': {html: wordCounterHTML, init: initWordCounter},
+  'case-converter': {html: caseConverterHTML, init: initCaseConverter},
+  'slug-generator': {html: slugGeneratorHTML, init: initSlugGenerator},
+  'password-checker': {html: passwordCheckerHTML, init: initPasswordChecker},
+  'remove-duplicate-lines': {html: removeDuplicateLinesHTML, init: initRemoveDuplicateLines},
+  'random-picker': {html: randomPickerHTML, init: initRandomPicker},
+  'calc-umur': {html: calcUmurHTML, init: initCalcUmur},
+  'stopwatch': {html: stopwatchHTML, init: initStopwatch},
+};
+
+function navHTML(){
+  return `
+  <nav class="nav">
+    <div class="wrap">
+      <a class="logo" href="#home">TOOL<span>KITA</span></a>
+      <div class="navlinks">
+        <a href="#home">Home</a>
+        <a href="#all-tools" onclick="location.hash='home'; setTimeout(()=>document.getElementById('all-tools').scrollIntoView({behavior:'smooth'}),50); return false;">Tools</a>
+        <a href="#blog">Blog</a>
+      </div>
+    </div>
+  </nav>`;
+}
+
+function footerHTML(){
+  return `
+  <footer>
+    <div class="wrap">
+      <div>© 2026 Toolkita. Dibuat untuk bantu kerja harian jadi lebih ringan.</div>
+      <div>
+        <a href="#about">Tentang</a>
+        <a href="#contact">Kontak</a>
+        <a href="#privacy">Kebijakan Privasi</a>
+        <a href="#terms">Syarat Penggunaan</a>
+      </div>
+    </div>
+  </footer>`;
+}
+
+function render(){
+  const hash = (location.hash || '#home').replace('#','');
+  if(hash === 'home' || hash === '' || hash === 'all-tools'){
+    APP.innerHTML = navHTML() + homeHTML() + footerHTML();
+    initHome();
+    if(hash === 'all-tools'){
+      setTimeout(()=>document.getElementById('all-tools').scrollIntoView({block:'start'}), 30);
+    }
+    return;
+  }
+  if(hash === 'blog'){
+    APP.innerHTML = navHTML() + blogListHTML() + footerHTML();
+    window.scrollTo(0,0);
+    return;
+  }
+  if(hash.startsWith('blog-')){
+    APP.innerHTML = navHTML() + blogPostHTML(hash.replace('blog-','')) + footerHTML();
+    window.scrollTo(0,0);
+    return;
+  }
+  if(hash === 'about'){ APP.innerHTML = navHTML() + aboutHTML() + footerHTML(); window.scrollTo(0,0); return; }
+  if(hash === 'contact'){ APP.innerHTML = navHTML() + contactHTML() + footerHTML(); window.scrollTo(0,0); return; }
+  if(hash === 'privacy'){ APP.innerHTML = navHTML() + privacyHTML() + footerHTML(); window.scrollTo(0,0); return; }
+  if(hash === 'terms'){ APP.innerHTML = navHTML() + termsHTML() + footerHTML(); window.scrollTo(0,0); return; }
+
+  const tool = toolById(hash);
+  if(!tool || !TOOL_RENDERERS[hash]){
+    APP.innerHTML = navHTML() + homeHTML() + footerHTML();
+    initHome();
+    return;
+  }
+  const r = TOOL_RENDERERS[hash];
+  APP.innerHTML = navHTML() + r.html(tool) + footerHTML();
+  r.init();
+  window.scrollTo(0,0);
+}
+
+window.addEventListener('hashchange', render);
+render();
+</script>
+</body>
+</html>
