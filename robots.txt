@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://juna07.github.io/toolkita/sitemap.xml
