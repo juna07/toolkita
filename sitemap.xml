@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  <url>
-    <loc>https://juna07.github.io/toolkita/</loc>
-  </url>
-
+  <url><loc>https://juna07.github.io/toolkita/</loc></url>
+  <url><loc>https://juna07.github.io/toolkita/word-counter.html</loc></url>
+  <url><loc>https://juna07.github.io/toolkita/calculator.html</loc></url>
+  <url><loc>https://juna07.github.io/toolkita/percentage-calculator.html</loc></url>
+  <url><loc>https://juna07.github.io/toolkita/password-generator.html</loc></url>
+  <url><loc>https://juna07.github.io/toolkita/text-case-converter.html</loc></url>
+  <url><loc>https://juna07.github.io/toolkita/bmi-calculator.html</loc></url>
+  <url><loc>https://juna07.github.io/toolkita/age-calculator.html</loc></url>
+  <url><loc>https://juna07.github.io/toolkita/url-encoder-decoder.html</loc></url>
+  <url><loc>https://juna07.github.io/toolkita/base64-encoder-decoder.html</loc></url>
+  <url><loc>https://juna07.github.io/toolkita/qr-code-generator.html</loc></url>
+  <url><loc>https://juna07.github.io/toolkita/discount-calculator.html</loc></url>
+  <url><loc>https://juna07.github.io/toolkita/json-formatter.html</loc></url>
 </urlset>
