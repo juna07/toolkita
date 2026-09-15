@@ -18,4 +18,6 @@
   <url><loc>https://juna07.github.io/toolkita/image-compressor.html</loc></url>
   <url><loc>https://juna07.github.io/toolkita/profit-calculator.html</loc></url>
   <url><loc>https://juna07.github.io/toolkita/caption-generator.html</loc></url>
+"+ "
+".join(f"  <url><loc>{u}</loc></url>" for u in newurls) + "
 </urlset>
