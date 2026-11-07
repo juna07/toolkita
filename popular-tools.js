@@ -55,8 +55,44 @@ function img(mode) {
   const im=new Image(); im.onload=()=>{ const c=document.createElement('canvas'); c.width=im.width;c.height=im.height;c.getContext('2d').drawImage(im,0,0); c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='toolkita.'+(mode.split('/')[1]||'jpg');a.click();URL.revokeObjectURL(a.href);},mode,.9);}; im.src=URL.createObjectURL(f);
 }
 function resize() {
-  const f=$('file')?.files[0],w=+$('input1')?.value; if(!f||!w)return;
-  const im=new Image(); im.onload=()=>{const c=document.createElement('canvas'),h=Math.round(im.height*w/im.width);c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='resized.jpg';a.click();URL.revokeObjectURL(a.href);},'image/jpeg',.9);}; im.src=URL.createObjectURL(f);
+  const f = $('file')?.files?.[0];
+  const w = Number($('input1')?.value);
+  const status = $('out') || (() => {
+    const el = document.createElement('p');
+    el.id = 'out';
+    $('file')?.parentElement?.appendChild(el);
+    return el;
+  })();
+  if (!f) { status.textContent = 'Pilih gambar terlebih dahulu.'; return; }
+  if (!Number.isInteger(w) || w < 1 || w > 10000) {
+    status.textContent = 'Masukkan lebar antara 1 sampai 10.000 piksel.';
+    return;
+  }
+  if (!f.type.startsWith('image/')) { status.textContent = 'File yang dipilih bukan gambar.'; return; }
+  const sourceUrl = URL.createObjectURL(f);
+  const im = new Image();
+  im.onerror = () => { URL.revokeObjectURL(sourceUrl); status.textContent = 'Gambar tidak dapat dibaca. Coba file gambar lain.'; };
+  im.onload = () => {
+    const h = Math.max(1, Math.round(im.height * w / im.width));
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) { URL.revokeObjectURL(sourceUrl); status.textContent = 'Browser tidak mendukung proses gambar ini.'; return; }
+    ctx.drawImage(im, 0, 0, w, h);
+    canvas.toBlob(blob => {
+      URL.revokeObjectURL(sourceUrl);
+      if (!blob) { status.textContent = 'Gagal membuat gambar. Coba ukuran yang lebih kecil.'; return; }
+      const resultUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = resultUrl;
+      a.download = 'toolkita-resized.jpg';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(resultUrl), 1000);
+      status.textContent = 'Selesai. Ukuran hasil: ' + w + ' × ' + h + ' piksel.';
+    }, 'image/jpeg', 0.9);
+  };
+  im.src = sourceUrl;
 }
 function image64() { const f=$('file')?.files[0]; if(f){const r=new FileReader();r.onload=()=>{$('out').textContent=r.result};r.readAsDataURL(f);} }
 
