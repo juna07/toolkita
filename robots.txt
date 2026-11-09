@@ -2,4 +2,3 @@ User-agent: *
 Allow: /
 
 Sitemap: https://juna07.github.io/toolkita/sitemap.xml
-Sitemap: https://juna07.github.io/toolkita/sitemap-gsc.xml
